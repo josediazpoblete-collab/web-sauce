@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito+Sans:wght@400;600;700;800&display=swap');
+
+.font-display { font-family: 'Alfa Slab One', cursive; }
+
+.ticket-edge {
+  background-image: radial-gradient(circle at 8px 8px, transparent 8px, #F2E8D5 8px);
+  background-size: 16px 16px;
+  background-position: -8px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
