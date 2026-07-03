@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw } from "lucide-react";
+import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw, Search } from "lucide-react";
 
 // ─── CONFIGURACIÓN ──────────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = "56966118435"; // ← Cambia esto por tu número real
@@ -20,16 +20,27 @@ const BG_PHOTOS = [
 ];
 
 // ─── CATEGORÍAS ─────────────────────────────────────────────────────────────
-const CATEGORIES = [
-  { id: "almacen",   label: "Almacén",    icon: "🥫" },
-  { id: "libreria",  label: "Librería",   icon: "✏️" },
-  { id: "helados",   label: "Helados",    icon: "🍦" },
-  { id: "bebidas",   label: "Bebidas",    icon: "🥤" },
-  { id: "verduleria",label: "Verdulería", icon: "🥬" },
-  { id: "ensaladas", label: "Ensaladas",  icon: "🥗" },
-  { id: "fiambres",  label: "Fiambres",   icon: "🧀" },
-  { id: "pan",       label: "Pan",        icon: "🍞" },
-];
+// Iconos por categoría — agregá nuevas categorías acá si querés un ícono específico
+const CAT_ICONS = {
+  "almacen": "🥫", "almacén": "🥫",
+  "libreria": "✏️", "librería": "✏️",
+  "helados": "🍦",
+  "bebidas": "🥤",
+  "verduleria": "🥬", "verdulería": "🥬",
+  "ensaladas": "🥗",
+  "fiambres": "🧀",
+  "pan": "🍞",
+  "carnes": "🥩",
+  "lacteos": "🥛", "lácteos": "🥛",
+  "limpieza": "🧹",
+  "snacks": "🍿",
+  "condimentos": "🧂",
+  "mascotas": "🐾",
+  "ferreteria": "🔧", "ferretería": "🔧",
+};
+
+// Capitaliza primera letra
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 // Productos de respaldo (cuando no hay conexión a internet)
 const PRODUCTOS_RESPALDO = [
@@ -116,6 +127,7 @@ function Field({ label, value, onChange, placeholder, icon, textarea }) {
 // ─── APP PRINCIPAL ───────────────────────────────────────────────────────────
 export default function ElSauceStore() {
   const [activeCat, setActiveCat]     = useState("almacen");
+  const [search, setSearch]           = useState("");
   const [cart, setCart]               = useState({});
   const [drawerOpen, setDrawerOpen]   = useState(false);
   const [checkoutOpen,setCheckoutOpen]= useState(false);
@@ -126,7 +138,29 @@ export default function ElSauceStore() {
   const [usingFallback, setUsingFallback] = useState(false);
   const [bgIndex, setBgIndex]         = useState(0);
 
-  // Slideshow de fondo — cambia cada 5 segundos
+  // Categorías dinámicas — se generan desde los productos cargados
+  const categories = useMemo(() => {
+    const seen = new Set();
+    const result = [];
+    products.forEach(p => {
+      if (p.cat && !seen.has(p.cat)) {
+        seen.add(p.cat);
+        result.push({
+          id: p.cat,
+          label: capitalize(p.cat),
+          icon: CAT_ICONS[p.cat] || "📦",
+        });
+      }
+    });
+    return result;
+  }, [products]);
+
+  // Si la categoría activa no existe en el nuevo set, volver a la primera
+  useEffect(() => {
+    if (categories.length > 0 && !categories.find(c => c.id === activeCat)) {
+      setActiveCat(categories[0].id);
+    }
+  }, [categories]);
   useEffect(() => {
     const interval = setInterval(() => {
       setBgIndex(i => (i + 1) % BG_PHOTOS.length);
@@ -154,7 +188,15 @@ export default function ElSauceStore() {
 
   useEffect(() => { loadProducts(); }, []);
 
-  const itemsInCat = useMemo(()=>products.filter(p=>p.cat===activeCat),[activeCat,products]);
+  const isSearching = search.trim().length > 0;
+  const itemsInCat = useMemo(() => {
+    if (isSearching) {
+      return products.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    return products.filter(p => p.cat === activeCat);
+  }, [activeCat, products, search, isSearching]);
   const cartList   = useMemo(()=>
     Object.entries(cart).filter(([,qty])=>qty>0)
       .map(([id,qty])=>({...products.find(p=>p.id===Number(id)),qty})),
@@ -217,7 +259,7 @@ export default function ElSauceStore() {
       {/* CATEGORÍAS */}
       <nav className="sticky top-[60px] sm:top-[64px] z-20 bg-[#F2E8D5] border-b border-[#1A1A1A]/10 overflow-x-auto">
         <div className="max-w-6xl mx-auto px-4 flex gap-2 py-3 min-w-max">
-          {CATEGORIES.map(c=>(
+          {categories.map(c=>(
             <button key={c.id} onClick={()=>setActiveCat(c.id)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap border-2 transition ${
                 activeCat===c.id?"bg-[#2B3A2F] text-[#F2E8D5] border-[#2B3A2F]":"bg-transparent text-[#2B3A2F] border-[#2B3A2F]/30 hover:border-[#2B3A2F]/70"}`}>
@@ -226,6 +268,24 @@ export default function ElSauceStore() {
           ))}
         </div>
       </nav>
+
+      {/* BUSCADOR */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/40" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar producto... (ej: tomate, coca, pan)"
+            className="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-[#1A1A1A]/15 bg-white text-sm focus:border-[#7A2E1D] focus:outline-none transition shadow-sm"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/40 hover:text-[#7A2E1D]">
+              <X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="max-w-6xl mx-auto px-4 py-6">
@@ -250,7 +310,10 @@ export default function ElSauceStore() {
         )}
 
         <h2 className="mb-4 text-lg text-[#7A2E1D]" style={{fontFamily:"'Alfa Slab One',cursive"}}>
-          {CATEGORIES.find(c=>c.id===activeCat)?.icon} {CATEGORIES.find(c=>c.id===activeCat)?.label}
+          {isSearching
+            ? `🔍 Resultados para "${search}" (${itemsInCat.length})`
+            : `${categories.find(c=>c.id===activeCat)?.icon} ${categories.find(c=>c.id===activeCat)?.label}`
+          }
         </h2>
 
         {/* Spinner */}
@@ -264,7 +327,12 @@ export default function ElSauceStore() {
         {/* Sin productos en categoría */}
         {!loading&&itemsInCat.length===0&&(
           <div className="text-center py-16 text-[#1A1A1A]/40">
-            <p className="text-sm">No hay productos disponibles en esta categoría.</p>
+            <p className="text-sm">
+              {isSearching
+                ? `No encontramos productos para "${search}".`
+                : "No hay productos disponibles en esta categoría."
+              }
+            </p>
           </div>
         )}
 
