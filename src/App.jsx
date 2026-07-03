@@ -22,7 +22,7 @@ const BG_PHOTOS = [
 // ─── CATEGORÍAS ─────────────────────────────────────────────────────────────
 // Iconos por categoría — agregá nuevas categorías acá si querés un ícono específico
 const CAT_ICONS = {
-  "almacen": "🥫", "almacén": "🥫",
+  "abarrotes": "🥫", "almacen": "🥫", "almacén": "🥫",
   "libreria": "✏️", "librería": "✏️",
   "helados": "🍦",
   "bebidas": "🥤",
@@ -44,10 +44,10 @@ const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 // Productos de respaldo (cuando no hay conexión a internet)
 const PRODUCTOS_RESPALDO = [
-  { id:1,  cat:"almacen",    name:"Aceite Chef 1L",         price:2990, unit:"un" },
-  { id:2,  cat:"almacen",    name:"Arroz Tucapel 1kg",      price:1590, unit:"un" },
-  { id:3,  cat:"almacen",    name:"Azúcar Iansa 1kg",       price:1490, unit:"un" },
-  { id:4,  cat:"almacen",    name:"Fideos Carozzi 400g",    price:990,  unit:"un" },
+  { id:1,  cat:"abarrotes",    name:"Aceite Chef 1L",         price:2990, unit:"un" },
+  { id:2,  cat:"abarrotes",    name:"Arroz Tucapel 1kg",      price:1590, unit:"un" },
+  { id:3,  cat:"abarrotes",    name:"Azúcar Iansa 1kg",       price:1490, unit:"un" },
+  { id:4,  cat:"abarrotes",    name:"Fideos Carozzi 400g",    price:990,  unit:"un" },
   { id:5,  cat:"libreria",   name:"Cuaderno universitario", price:1990, unit:"un" },
   { id:6,  cat:"libreria",   name:"Lápiz mina Bic",         price:350,  unit:"un" },
   { id:7,  cat:"libreria",   name:"Set lápices de colores", price:2490, unit:"un" },
