@@ -190,14 +190,7 @@ export default function ElSauceStore() {
   };
 
   return (
-    <div className="min-h-screen text-[#1A1A1A] relative" style={{fontFamily:"'Nunito Sans',sans-serif"}}>
-      {/* Fondo rotante con fotos del local */}
-      {BG_PHOTOS.map((src, i) => (
-        <div key={src} className="fixed inset-0 bg-cover bg-center transition-opacity duration-1000 -z-10"
-          style={{ backgroundImage:`url(${src})`, opacity: i === bgIndex ? 1 : 0 }} />
-      ))}
-      {/* Overlay oscuro para legibilidad */}
-      <div className="fixed inset-0 bg-black/50 -z-10" />
+    <div className="min-h-screen bg-[#F2E8D5] text-[#1A1A1A]" style={{fontFamily:"'Nunito Sans',sans-serif"}}>
 
       {/* HEADER */}
       <header className="sticky top-0 z-30 bg-[#7A2E1D] text-[#F2E8D5] shadow-md">
@@ -281,7 +274,7 @@ export default function ElSauceStore() {
             {itemsInCat.map(p=>{
               const qty=cart[p.id]||0;
               return(
-                <div key={p.id} className="bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-[#1A1A1A]/10 p-3 sm:p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
+                <div key={p.id} className="bg-white rounded-2xl border-2 border-[#1A1A1A]/8 p-3 sm:p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
                   <div>
                     <p className="font-bold text-sm sm:text-base leading-snug">{p.name}</p>
                     <p className="text-xs text-[#1A1A1A]/50 mt-0.5">por {p.unit}</p>
