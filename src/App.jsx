@@ -273,7 +273,7 @@ export default function ElSauceStore() {
       `}</style>
 
       {/* ── HERO BANNER ─────────────────────────────────────────────────────── */}
-      <div style={{position:"relative",height:220,overflow:"hidden"}}>
+      <div style={{position:"relative",height:380,overflow:"hidden"}}>
         {BG_PHOTOS.map((src,i) => (
           <div key={src} style={{
             position:"absolute",inset:0,
@@ -288,15 +288,15 @@ export default function ElSauceStore() {
         {/* Contenido hero */}
         <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",alignItems:"center",padding:"0 20px",maxWidth:1200,margin:"0 auto"}}>
           <img src={MASCOT_SRC} alt="Mascota El Sauce"
-            style={{width:72,height:72,borderRadius:"50%",objectFit:"cover",border:"3px solid "+S.mostaza,flexShrink:0,marginRight:16}} />
+            style={{width:160,height:160,borderRadius:"50%",objectFit:"cover",border:"4px solid "+S.mostaza,flexShrink:0,marginRight:24}} />
           <div style={{flex:1}}>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:900,color:S.blanco,lineHeight:1.1,letterSpacing:"-0.5px"}}>
+            <p style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:900,color:S.blanco,lineHeight:1.05,letterSpacing:"-1px"}}>
               ¡Bienvenido a El Sauce!
             </p>
-            <p style={{color:"rgba(255,255,255,.9)",fontSize:12,marginTop:6,lineHeight:1.5}}>
+            <p style={{color:"rgba(255,255,255,.9)",fontSize:20,marginTop:12,lineHeight:1.5}}>
               Donde la calidad, la cercanía y la comodidad llegan a tu hogar.
             </p>
-            <p style={{color:"rgba(255,255,255,.8)",fontSize:12,marginTop:2}}>
+            <p style={{color:"rgba(255,255,255,.85)",fontSize:20,marginTop:6}}>
               Disfruta la experiencia de comprar sin salir de casa. 🚚🏡
             </p>
           </div>
