@@ -108,7 +108,7 @@ function parseCSV(text) {
     id:     Number(r.id),
     cat:    CAT_MAP[r.categoria?.toLowerCase()] || r.categoria?.toLowerCase(),
     name:   r.nombre,
-    price:  Number(r.precio)||0,
+    price:  Number(r.precio?.replace(/[$\.]/g,'').replace(',','.')) || 0,
     unit:   r.unidad||"un",
     stock:  r.stock !== "" ? Number(r.stock) : null,
     imagen: r.imagen?.trim() || "",
