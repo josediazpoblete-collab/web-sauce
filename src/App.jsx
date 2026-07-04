@@ -24,6 +24,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import productImages from "./productImages.json";
 
 const WHATSAPP_NUMBER = "56966118435";
 
@@ -136,6 +137,13 @@ const normalizeText = (value = "") =>
 
 const keyify = (value = "") => normalizeText(value).replace(/[^a-z0-9]/g, "");
 
+const productImageFor = (name) => productImages[keyify(name)] || "";
+
+const withProductImage = (product) => ({
+  ...product,
+  image: product.image || productImageFor(product.name),
+});
+
 const slugCategory = (value = "") => {
   const normalized = normalizeText(value).replace(/[^a-z0-9]+/g, "");
   const aliases = {
@@ -221,7 +229,7 @@ function parseCSV(text) {
         price: parseMoney(row.precio),
         unit: row.unidad || "un",
         notes: row.notas || "",
-        image: row.imagen || row.foto || row.image || "",
+        image: row.imagen || row.foto || row.image || productImageFor(row.nombre),
       };
     })
     .filter(Boolean);
@@ -380,17 +388,16 @@ function QuantityStepper({ qty, onDecrease, onIncrease, compact = false }) {
 
 function ProductVisual({ product }) {
   const meta = categoryMeta(product.cat);
+  const [hasImageError, setHasImageError] = useState(false);
 
-  if (product.image) {
+  if (product.image && !hasImageError) {
     return (
       <img
         className="product-image"
         src={product.image}
         alt={product.name}
         loading="lazy"
-        onError={(event) => {
-          event.currentTarget.style.display = "none";
-        }}
+        onError={() => setHasImageError(true)}
       />
     );
   }
@@ -829,7 +836,7 @@ export default function ElSauceStore() {
       if (!parsed.length) throw new Error("La planilla no tiene productos disponibles");
       setProducts(parsed);
     } catch (error) {
-      setProducts(FALLBACK_PRODUCTS);
+      setProducts(FALLBACK_PRODUCTS.map(withProductImage));
       setUsingFallback(true);
       setLoadError(error.message || "Usando catálogo de respaldo");
     } finally {
