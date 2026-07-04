@@ -911,6 +911,16 @@ button:disabled {
   padding: 0 12px;
 }
 
+.field input[type="time"] {
+  color-scheme: light;
+  cursor: pointer;
+}
+
+.field input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.75;
+}
+
 .field-control .field-icon + input {
   padding-left: 40px;
 }
