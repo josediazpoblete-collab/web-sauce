@@ -371,7 +371,15 @@ export default function ElSauceStore() {
         style={{
           transform: introPhase === "mascot" || introPhase === "text" ? "translateY(100%)" : "translateY(0)",
           minHeight:"100vh",
+          backgroundImage:`url(${BG_PRODUCTS_SRC})`,
+          backgroundSize:"cover",
+          backgroundPosition:"center",
+          backgroundAttachment:"fixed",
+          position:"relative",
         }}>
+        {/* Overlay para legibilidad en toda la página excepto el banner */}
+        <div style={{position:"absolute",inset:0,background:"rgba(247,243,236,0.88)",zIndex:0,pointerEvents:"none"}} />
+        <div style={{position:"relative",zIndex:1}}>
 
       {/* ── HERO BANNER ─────────────────────────────────────────────────────── */}
       <div style={{position:"relative",height:380,overflow:"hidden"}}>
@@ -456,18 +464,7 @@ export default function ElSauceStore() {
       )}
 
       {/* ── CONTENIDO PRINCIPAL ──────────────────────────────────────────────── */}
-      <main style={{
-        maxWidth:1200,margin:"0 auto",padding:"8px 16px 100px",
-        backgroundImage:`url(${BG_PRODUCTS_SRC})`,
-        backgroundSize:"cover",
-        backgroundPosition:"center",
-        backgroundAttachment:"local",
-        borderRadius:0,
-        position:"relative",
-      }}>
-        {/* overlay suave para que las tarjetas se lean bien */}
-        <div style={{position:"absolute",inset:0,background:"rgba(247,243,236,0.82)",zIndex:0,pointerEvents:"none"}} />
-        <div style={{position:"relative",zIndex:1}}>
+      <main style={{maxWidth:1200,margin:"0 auto",padding:"8px 16px 100px"}}>
 
         {/* Aviso fallback */}
         {usingFallback && (
@@ -555,7 +552,6 @@ export default function ElSauceStore() {
             })}
           </div>
         )}
-        </div>{/* end zIndex wrapper */}
       </main>
 
       {/* ── BARRA FLOTANTE ───────────────────────────────────────────────────── */}
@@ -672,6 +668,7 @@ export default function ElSauceStore() {
       <footer style={{textAlign:"center",padding:"20px 0 80px",fontSize:12,color:S.gris}}>
         Almacén El Sauce · Chépica, Colchagua
       </footer>
+      </div>{/* end zIndex */}
       </div>{/* end web-reveal */}
     </div>
   );
