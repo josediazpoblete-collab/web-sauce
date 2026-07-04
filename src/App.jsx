@@ -171,6 +171,18 @@ const parseMoney = (value) => {
   return Number(cleaned) || 0;
 };
 
+const firstValue = (...values) => values.find((value) => String(value ?? "").trim() !== "") ?? "";
+
+const parseStock = (value) => {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+
+  const parsed = Number(raw.replace(/[^\d,.-]/g, "").replace(",", "."));
+  if (!Number.isFinite(parsed)) return null;
+
+  return Math.max(0, Math.floor(parsed));
+};
+
 function parseCSVLine(line) {
   const cols = [];
   let current = "";
@@ -216,11 +228,26 @@ function parseCSV(text) {
         row[header] = cols[colIndex] || "";
       });
 
-      const available = normalizeText(row.disponible || row.estado || "si");
-      const isAvailable = ["si", "s", "yes", "true", "1", "disponible"].includes(available);
+      const availability = normalizeText(firstValue(row.disponible, row.estado, row.activo, row.publicado));
+      const inactiveValues = [
+        "no",
+        "n",
+        "false",
+        "0",
+        "agotado",
+        "agotada",
+        "sin stock",
+        "sinstock",
+        "inactivo",
+        "oculto",
+        "no disponible",
+      ];
+      const stock = parseStock(firstValue(row.stock, row.cantidad, row.inventario, row.existencias));
+      const isAvailable = !inactiveValues.includes(availability) && (stock === null || stock > 0);
       if (!row.nombre || !isAvailable) return null;
 
       const cat = slugCategory(row.categoria);
+      const sheetImage = firstValue(row.imagen, row.foto, row.image, row.imageurl, row.urlimagen, row.linkimagen, row.imgbb);
 
       return {
         id: Number(row.id) || index + 1,
@@ -229,7 +256,8 @@ function parseCSV(text) {
         price: parseMoney(row.precio),
         unit: row.unidad || "un",
         notes: row.notas || "",
-        image: row.imagen || row.foto || row.image || productImageFor(row.nombre),
+        stock,
+        image: sheetImage || productImageFor(row.nombre),
       };
     })
     .filter(Boolean);
@@ -363,10 +391,10 @@ function Field({ label, value, onChange, placeholder, icon: Icon, textarea, auto
   );
 }
 
-function QuantityStepper({ qty, onDecrease, onIncrease, compact = false }) {
+function QuantityStepper({ qty, onDecrease, onIncrease, compact = false, maxReached = false }) {
   if (qty <= 0) {
     return (
-      <button type="button" className="add-button" onClick={onIncrease}>
+      <button type="button" className="add-button" onClick={onIncrease} disabled={maxReached}>
         <Plus size={16} />
         Agregar
       </button>
@@ -379,7 +407,7 @@ function QuantityStepper({ qty, onDecrease, onIncrease, compact = false }) {
         <Minus size={16} />
       </button>
       <span>{qty}</span>
-      <button type="button" onClick={onIncrease} aria-label="Agregar uno">
+      <button type="button" onClick={onIncrease} aria-label="Agregar uno" disabled={maxReached}>
         <Plus size={16} />
       </button>
     </div>
@@ -411,6 +439,8 @@ function ProductVisual({ product }) {
 
 function ProductCard({ product, qty, onAdd, onRemove }) {
   const meta = categoryMeta(product.cat);
+  const hasStock = Number.isFinite(product.stock);
+  const maxReached = hasStock && qty >= product.stock;
 
   return (
     <article className="product-card">
@@ -419,10 +449,12 @@ function ProductCard({ product, qty, onAdd, onRemove }) {
         <span className={`category-pill ${meta.tone}`}>{meta.label}</span>
         <h3>{product.name}</h3>
         <p>por {product.unit}</p>
+        {hasStock && <p className="product-stock">{product.stock} disponibles</p>}
+        {product.notes && <p className="product-note">{product.notes}</p>}
       </div>
       <div className="product-actions">
         <strong>{CLP(product.price)}</strong>
-        <QuantityStepper qty={qty} onDecrease={onRemove} onIncrease={onAdd} />
+        <QuantityStepper qty={qty} onDecrease={onRemove} onIncrease={onAdd} maxReached={maxReached} />
       </div>
     </article>
   );
@@ -480,6 +512,7 @@ function OrderSummary({ cartList, total, totalItems, onAdd, onRemove, onCheckout
                   qty={item.qty}
                   onDecrease={() => onRemove(item.id)}
                   onIncrease={() => onAdd(item.id)}
+                  maxReached={Number.isFinite(item.stock) && item.qty >= item.stock}
                 />
               </div>
             ))}
@@ -903,11 +936,14 @@ export default function ElSauceStore() {
 
   const updateQty = (id, delta) => {
     setCart((previous) => {
+      const product = productsById.get(Number(id));
+      const stockLimit = Number.isFinite(product?.stock) ? product.stock : null;
       const next = { ...previous };
       const current = next[id] || 0;
       const updated = Math.max(0, current + delta);
-      if (updated === 0) delete next[id];
-      else next[id] = updated;
+      const limited = stockLimit === null ? updated : Math.min(updated, stockLimit);
+      if (limited === 0) delete next[id];
+      else next[id] = limited;
       return next;
     });
   };
