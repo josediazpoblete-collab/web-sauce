@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -742,11 +742,51 @@ export default function ElSauceStore() {
   const [copied, setCopied] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
+  const drawerOpenRef = useRef(drawerOpen);
+  const checkoutOpenRef = useRef(checkoutOpen);
 
   const sharedOrder = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
     return decodeOrder(params.get("pedido"));
   }, []);
+
+  drawerOpenRef.current = drawerOpen;
+  checkoutOpenRef.current = checkoutOpen;
+
+  useEffect(() => {
+    if (sharedOrder) return undefined;
+
+    const currentState = window.history.state || {};
+    if (!currentState.elSauceGuard && !currentState.elSauceLayer) {
+      window.history.replaceState({ ...currentState, elSauceRoot: true }, "", window.location.href);
+      window.history.pushState({ elSauceGuard: true }, "", window.location.href);
+    }
+
+    const handlePopState = () => {
+      if (checkoutOpenRef.current) {
+        setCheckoutOpen(false);
+        setSent(false);
+        return;
+      }
+
+      if (drawerOpenRef.current) {
+        setDrawerOpen(false);
+        return;
+      }
+
+      const wantsToLeave = window.confirm("¿Seguro que quieres salir de la página?");
+      if (!wantsToLeave) {
+        window.history.pushState({ elSauceGuard: true }, "", window.location.href);
+        return;
+      }
+
+      window.removeEventListener("popstate", handlePopState);
+      window.history.back();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [sharedOrder]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -754,6 +794,27 @@ export default function ElSauceStore() {
     }, 6000);
     return () => window.clearInterval(interval);
   }, []);
+
+  const pushLayerState = (layer, replace = false) => {
+    if (sharedOrder) return;
+
+    const state = { elSauceGuard: true, elSauceLayer: layer };
+    if (replace || window.history.state?.elSauceLayer) {
+      window.history.replaceState(state, "", window.location.href);
+      return;
+    }
+
+    window.history.pushState(state, "", window.location.href);
+  };
+
+  const closeLayer = (fallback) => {
+    if (window.history.state?.elSauceLayer) {
+      window.history.back();
+      return;
+    }
+
+    fallback();
+  };
 
   const loadProducts = async () => {
     setLoading(true);
@@ -891,12 +952,27 @@ export default function ElSauceStore() {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
+  const openDrawer = () => {
+    setDrawerOpen(true);
+    setCheckoutOpen(false);
+    pushLayerState("cart");
+  };
+
+  const closeDrawer = () => closeLayer(() => setDrawerOpen(false));
+
   const openCheckout = () => {
     setSent(false);
     setCopied(false);
     setCheckoutOpen(true);
     setDrawerOpen(false);
+    pushLayerState("checkout", Boolean(window.history.state?.elSauceLayer));
   };
+
+  const closeCheckout = () =>
+    closeLayer(() => {
+      setCheckoutOpen(false);
+      setSent(false);
+    });
 
   const resetOrder = () => {
     setCart({});
@@ -906,6 +982,9 @@ export default function ElSauceStore() {
     setLastOrder(null);
     setCheckoutOpen(false);
     setDrawerOpen(false);
+    if (window.history.state?.elSauceLayer) {
+      window.history.replaceState({ elSauceGuard: true }, "", window.location.href);
+    }
   };
 
   if (sharedOrder) return <OrderDetailPage order={sharedOrder} />;
@@ -923,7 +1002,7 @@ export default function ElSauceStore() {
               <small>{STORE.location}</small>
             </span>
           </a>
-          <button type="button" className="cart-button" onClick={() => setDrawerOpen(true)}>
+          <button type="button" className="cart-button" onClick={openDrawer}>
             <ShoppingBasket size={19} />
             <span>Mi pedido</span>
             {totalItems > 0 && <b>{totalItems}</b>}
@@ -1071,7 +1150,7 @@ export default function ElSauceStore() {
       </main>
 
       {totalItems > 0 && !drawerOpen && !checkoutOpen && (
-        <button type="button" className="mobile-cart-bar" onClick={() => setDrawerOpen(true)}>
+        <button type="button" className="mobile-cart-bar" onClick={openDrawer}>
           <span>
             <ShoppingBasket size={18} />
             {totalItems} producto{totalItems !== 1 ? "s" : ""}
@@ -1082,7 +1161,7 @@ export default function ElSauceStore() {
 
       {drawerOpen && (
         <div className="drawer-shell">
-          <button type="button" className="drawer-backdrop" onClick={() => setDrawerOpen(false)} aria-label="Cerrar" />
+          <button type="button" className="drawer-backdrop" onClick={closeDrawer} aria-label="Cerrar" />
           <OrderSummary
             drawer
             cartList={cartList}
@@ -1091,7 +1170,7 @@ export default function ElSauceStore() {
             onAdd={(id) => updateQty(id, 1)}
             onRemove={(id) => updateQty(id, -1)}
             onCheckout={openCheckout}
-            onClose={() => setDrawerOpen(false)}
+            onClose={closeDrawer}
           />
         </div>
       )}
@@ -1102,7 +1181,7 @@ export default function ElSauceStore() {
           setForm={setForm}
           total={total}
           cartList={cartList}
-          onClose={() => setCheckoutOpen(false)}
+          onClose={closeCheckout}
           onSend={sendOrder}
           onCopyLink={copyOrderLink}
           copied={copied}
