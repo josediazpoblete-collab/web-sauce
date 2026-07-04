@@ -82,6 +82,22 @@ const CAT_MAP = {
   "ensaladas":"ensaladas","fiambres":"fiambres","pan":"pan",
 };
 
+const parseMoney = (value) => {
+  if (!value) return 0;
+  const cleaned = String(value).replace(/[$\s.]/g,'').replace(',','.');
+  return Number(cleaned) || 0;
+};
+
+const firstValue = (...values) => values.find(v => String(v ?? "").trim() !== "") ?? "";
+
+const parseStock = (value) => {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  const parsed = Number(raw.replace(/[^\d,.-]/g,"").replace(",","."));
+  if (!Number.isFinite(parsed)) return null;
+  return Math.max(0, Math.floor(parsed));
+};
+
 function parseCSV(text) {
   const lines = text.trim().split("\n");
   const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/[^a-z]/g,""));
@@ -95,24 +111,27 @@ function parseCSV(text) {
     cols.push(cur);
     const row = {};
     headers.forEach((h,i) => row[h]=(cols[i]||"").trim().replace(/^"|"$/g,""));
-    return row;
-  })
-  .filter(r => {
-    if (!r.nombre) return false;
-    if (r.disponible?.toUpperCase() !== "SI") return false;
-    // ocultar si stock es 0
-    if (r.stock !== undefined && r.stock !== "" && Number(r.stock) === 0) return false;
-    return true;
-  })
-  .map(r => ({
-    id:     Number(r.id),
-    cat:    CAT_MAP[r.categoria?.toLowerCase()] || r.categoria?.toLowerCase(),
-    name:   r.nombre,
-    price:  Number(r.precio?.replace(/[$\.]/g,'').replace(',','.')) || 0,
-    unit:   r.unidad||"un",
-    stock:  r.stock !== "" ? Number(r.stock) : null,
-    imagen: r.imagen?.trim() || "",
-  }));
+
+    const INACTIVE = ["no","n","false","0","agotado","agotada","sin stock","sinstock","inactivo","oculto","no disponible"];
+    const availability = (firstValue(row.disponible, row.estado, row.activo, row.publicado) || "si").toLowerCase().trim();
+    const stock = parseStock(firstValue(row.stock, row.cantidad, row.inventario, row.existencias));
+    const isAvailable = !INACTIVE.includes(availability) && (stock === null || stock > 0);
+
+    if (!row.nombre || !isAvailable) return null;
+
+    const sheetImage = firstValue(row.imagen, row.foto, row.image, row.imageurl, row.urlimagen, row.linkimagen, row.imgbb);
+
+    return {
+      id:     Number(row.id) || 0,
+      cat:    CAT_MAP[row.categoria?.toLowerCase()] || row.categoria?.toLowerCase(),
+      name:   row.nombre,
+      price:  parseMoney(row.precio),
+      unit:   row.unidad || "un",
+      notes:  row.notas || "",
+      stock,
+      imagen: sheetImage?.trim() || "",
+    };
+  }).filter(Boolean);
 }
 
 // ─── COMPONENTE FIELD ────────────────────────────────────────────────────────
@@ -214,9 +233,15 @@ export default function ElSauceStore() {
   const total      = cartList.reduce((s,i)=>s+i.price*i.qty,0);
   const totalItems = cartList.reduce((s,i)=>s+i.qty,0);
 
-  const addQty = (id,delta) => setCart(prev=>{
-    const next={...prev}, cur=next[id]||0, upd=Math.max(0,cur+delta);
-    if(upd===0) delete next[id]; else next[id]=upd;
+  const addQty = (id, delta) => setCart(prev => {
+    const product = products.find(p => p.id === Number(id));
+    const stockLimit = Number.isFinite(product?.stock) ? product.stock : null;
+    const next = { ...prev };
+    const current = next[id] || 0;
+    const updated = Math.max(0, current + delta);
+    const limited = stockLimit === null ? updated : Math.min(updated, stockLimit);
+    if (limited === 0) delete next[id];
+    else next[id] = limited;
     return next;
   });
 
@@ -369,23 +394,32 @@ export default function ElSauceStore() {
                     </div>
                     <p className="font-bold text-sm sm:text-base leading-snug">{p.name}</p>
                     <p className="text-xs text-[#1A1A1A]/50 mt-0.5">por {p.unit}</p>
-                    {/* Badge de stock bajo */}
-                    {p.stock !== null && p.stock <= 5 && p.stock > 0 && (
-                      <p className="text-xs text-[#7A2E1D] font-bold mt-0.5">⚠️ Últimas {p.stock} unidades</p>
+                    {/* Stock disponible */}
+                    {Number.isFinite(p.stock) && p.stock <= 10 && (
+                      <p className="text-xs text-[#7A2E1D] font-bold mt-0.5">⚠️ {p.stock} disponibles</p>
                     )}
+                    {/* Notas */}
+                    {p.notes && <p className="text-xs text-[#1A1A1A]/60 mt-0.5 italic">{p.notes}</p>}
                     <p className="text-base sm:text-lg text-[#7A2E1D] mt-2" style={{fontFamily:"'Alfa Slab One',cursive"}}>{CLP(p.price)}</p>
                   </div>
                   <div className="mt-3">
                     {qty===0?(
-                      <button onClick={()=>addQty(p.id,1)}
-                        className="w-full bg-[#C9A227] text-[#1A1A1A] font-bold rounded-xl py-2 text-sm hover:brightness-95 active:scale-95 transition">
+                      <button
+                        onClick={()=>addQty(p.id,1)}
+                        disabled={Number.isFinite(p.stock) && p.stock === 0}
+                        className="w-full bg-[#C9A227] disabled:opacity-40 disabled:cursor-not-allowed text-[#1A1A1A] font-bold rounded-xl py-2 text-sm hover:brightness-95 active:scale-95 transition">
                         Agregar
                       </button>
                     ):(
                       <div className="flex items-center justify-between bg-[#2B3A2F] rounded-xl px-2 py-1.5">
                         <button onClick={()=>addQty(p.id,-1)} className="text-white p-1 rounded-lg hover:bg-white/10"><Minus size={16}/></button>
                         <span className="text-white font-bold text-sm">{qty}</span>
-                        <button onClick={()=>addQty(p.id,1)} className="text-white p-1 rounded-lg hover:bg-white/10"><Plus size={16}/></button>
+                        <button
+                          onClick={()=>addQty(p.id,1)}
+                          disabled={Number.isFinite(p.stock) && qty >= p.stock}
+                          className="text-white p-1 rounded-lg hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed">
+                          <Plus size={16}/>
+                        </button>
                       </div>
                     )}
                   </div>
