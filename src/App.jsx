@@ -23,12 +23,17 @@ const CAT_ICONS = {
   "abarrotes":"🥫","almacen":"🥫","almacén":"🥫",
   "libreria":"✏️","librería":"✏️",
   "helados":"🍦","bebidas":"🥤",
+  "bebidas jugos y mas":"🧃","bebidas jugos y más":"🧃",
   "verduleria":"🥬","verdulería":"🥬",
   "ensaladas":"🥗","fiambres":"🧀","pan":"🍞",
   "carnes":"🥩","lacteos":"🥛","lácteos":"🥛",
-  "limpieza":"🧹","aseo":"🧴","snacks":"🍿",
-  "condimentos":"🧂","mascotas":"🐾",
+  "limpieza":"🧹","aseo":"🧴",
+  "snacks":"🍿","confiteria":"🍬","confitería":"🍬",
+  "condimentos":"🧂",
+  "mascotas":"🐾","mascotas alimento":"🐾",
   "ferreteria":"🔧","ferretería":"🔧",
+  "tecnologia":"📱","tecnología":"📱",
+  "cumpleanos":"🎂","cumpleaños":"🎂",
 };
 
 const CAT_MAP = {
@@ -36,12 +41,17 @@ const CAT_MAP = {
   "abarrotes":"abarrotes",
   "librería":"libreria","libreria":"libreria",
   "helados":"helados","bebidas":"bebidas",
+  "bebidas jugos y mas":"bebidas jugos y mas","bebidas jugos y más":"bebidas jugos y mas",
   "verdulería":"verduleria","verduleria":"verduleria",
   "ensaladas":"ensaladas","fiambres":"fiambres","pan":"pan",
   "carnes":"carnes","lácteos":"lacteos","lacteos":"lacteos",
   "limpieza":"limpieza","aseo":"aseo","snacks":"snacks",
-  "condimentos":"condimentos","mascotas":"mascotas",
+  "confitería":"confiteria","confiteria":"confiteria",
+  "condimentos":"condimentos",
+  "mascotas":"mascotas","mascotas alimento":"mascotas alimento",
   "ferretería":"ferreteria","ferreteria":"ferreteria",
+  "tecnología":"tecnologia","tecnologia":"tecnologia",
+  "cumpleaños":"cumpleanos","cumpleanos":"cumpleanos",
 };
 
 // ─── PRODUCTOS RESPALDO ───────────────────────────────────────────────────────
@@ -280,12 +290,15 @@ export default function ElSauceStore() {
         <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",alignItems:"center",padding:"0 20px",maxWidth:1200,margin:"0 auto"}}>
           <img src={MASCOT_SRC} alt="Mascota El Sauce"
             style={{width:72,height:72,borderRadius:"50%",objectFit:"cover",border:"3px solid "+S.mostaza,flexShrink:0,marginRight:16}} />
-          <div>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:900,color:S.blanco,lineHeight:1.1,letterSpacing:"-0.5px"}}>
-              Almacén El Sauce
+          <div style={{flex:1}}>
+            <p style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:900,color:S.blanco,lineHeight:1.1,letterSpacing:"-0.5px"}}>
+              ¡Bienvenido a El Sauce!
             </p>
-            <p style={{color:"rgba(255,255,255,.75)",fontSize:13,marginTop:4}}>
-              Chépica · Delivery a domicilio
+            <p style={{color:"rgba(255,255,255,.9)",fontSize:12,marginTop:6,lineHeight:1.5}}>
+              Donde la calidad, la cercanía y la comodidad llegan a tu hogar.
+            </p>
+            <p style={{color:"rgba(255,255,255,.8)",fontSize:12,marginTop:2}}>
+              Disfruta la experiencia de comprar sin salir de casa. 🚚🏡
             </p>
           </div>
           {/* Boleta btn */}
