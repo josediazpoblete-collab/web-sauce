@@ -20,6 +20,10 @@ const WHATSAPP_NUMBER = "56991234567";
 Editá la planilla de Google Sheets. Los cambios se reflejan automáticamente en la web.
 Si no hay conexión a Google Sheets, la web muestra el catálogo de respaldo.
 
+La estructura recomendada de la hoja, columnas aceptadas y prompt para configurar todo con Claude están en:
+
+[`docs/configuracion-hoja-productos.md`](docs/configuracion-hoja-productos.md)
+
 ## Stack
 
 - React + Vite
