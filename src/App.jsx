@@ -247,6 +247,16 @@ function paymentLabel(paymentId) {
   return PAYMENT_OPTIONS.find((option) => option.id === paymentId)?.label || "Efectivo";
 }
 
+function formatPreferredTime(value) {
+  const cleanValue = value?.trim();
+  if (!cleanValue) return "Lo antes posible";
+
+  const timeMatch = cleanValue.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+  if (timeMatch) return `${timeMatch[1]}:${timeMatch[2]} hrs aprox.`;
+
+  return cleanValue;
+}
+
 function orderLink(order) {
   const url = new URL(window.location.href);
   url.search = "";
@@ -268,7 +278,7 @@ function formatOrderMessage(order, link) {
     "",
     `Nombre: ${order.customer.nombre}`,
     `Dirección: ${order.customer.direccion}`,
-    `Horario: ${order.customer.horario || "Lo antes posible"}`,
+    `Horario aprox: ${formatPreferredTime(order.customer.horario)}`,
     `Pago: ${paymentLabel(order.customer.pago)}`,
   ];
 
@@ -314,7 +324,9 @@ async function copyText(value) {
   return copied;
 }
 
-function Field({ label, value, onChange, placeholder, icon: Icon, textarea, autoComplete }) {
+function Field({ label, value, onChange, placeholder, icon: Icon, textarea, autoComplete, type = "text", step }) {
+  const handleValueChange = (event) => onChange(event.currentTarget.value);
+
   return (
     <label className="field">
       <span>{label}</span>
@@ -324,15 +336,18 @@ function Field({ label, value, onChange, placeholder, icon: Icon, textarea, auto
           <textarea
             rows={3}
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={handleValueChange}
             placeholder={placeholder}
           />
         ) : (
           <input
+            type={type}
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={handleValueChange}
+            onInput={handleValueChange}
             placeholder={placeholder}
             autoComplete={autoComplete}
+            step={step}
           />
         )}
       </div>
@@ -524,11 +539,13 @@ function CheckoutModal({
                 autoComplete="street-address"
               />
               <Field
-                label="Horario preferido"
+                label="Horario aproximado"
                 value={form.horario}
                 onChange={(value) => setForm({ ...form, horario: value })}
-                placeholder="Ej: hoy entre 18:00 y 20:00"
                 icon={Clock}
+                type="time"
+                step="900"
+                autoComplete="off"
               />
 
               <div className="payment-group">
@@ -686,7 +703,7 @@ function OrderDetailPage({ order }) {
           </p>
           <p>
             <Clock size={16} />
-            {order.customer?.horario || "Lo antes posible"}
+            {formatPreferredTime(order.customer?.horario)}
           </p>
           <p>
             <ReceiptText size={16} />
