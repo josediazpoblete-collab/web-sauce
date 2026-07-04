@@ -150,6 +150,19 @@ export default function ElSauceStore() {
   const [usingFallback, setUsingFallback] = useState(false);
   const [bgIndex, setBgIndex]           = useState(0);
 
+  // Intro animation states
+  const [introPhase, setIntroPhase] = useState("mascot"); // mascot | text | reveal | done
+
+  useEffect(() => {
+    // Phase 1: mascota crece (1.2s)
+    // Phase 2: texto aparece (1s)
+    // Phase 3: espera 2s y revela la web
+    const t1 = setTimeout(() => setIntroPhase("text"),   1200);
+    const t2 = setTimeout(() => setIntroPhase("reveal"),  2400);
+    const t3 = setTimeout(() => setIntroPhase("done"),    3600);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
   useEffect(() => {
     const iv = setInterval(() => setBgIndex(i => (i+1) % BG_PHOTOS.length), 5000);
     return () => clearInterval(iv);
@@ -250,6 +263,38 @@ export default function ElSauceStore() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ── INTRO ── */
+        @keyframes mascotGrow {
+          0%   { transform: scale(0.05); opacity: 0; }
+          60%  { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1);    opacity: 1; }
+        }
+        @keyframes textFadeIn {
+          0%   { opacity: 0; transform: translateY(18px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes webReveal {
+          0%   { transform: translateY(100%); }
+          100% { transform: translateY(0); }
+        }
+        @keyframes introFade {
+          0%   { opacity: 1; }
+          100% { opacity: 0; pointer-events: none; }
+        }
+        .intro-mascot {
+          animation: mascotGrow 1.1s cubic-bezier(.34,1.56,.64,1) forwards;
+        }
+        .intro-text {
+          animation: textFadeIn .7s ease forwards;
+        }
+        .web-reveal {
+          animation: webReveal .8s cubic-bezier(.22,1,.36,1) forwards;
+        }
+        .intro-exit {
+          animation: introFade .5s ease forwards;
+        }
+
         .cat-pill { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;border:2px solid transparent;transition:all .2s; }
         .cat-pill.active { background:${S.verde};color:${S.blanco}; }
         .cat-pill.inactive { background:${S.blanco};color:${S.verde};border-color:${S.borde}; }
@@ -270,7 +315,61 @@ export default function ElSauceStore() {
         .pago-btn.selected { background:${S.verde};color:${S.blanco};border-color:${S.verde}; }
         ::-webkit-scrollbar { width:4px;height:4px; }
         ::-webkit-scrollbar-thumb { background:#D1D5DB;border-radius:4px; }
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
+
+      {/* ── PANTALLA DE INTRO ───────────────────────────────────────────────── */}
+      {introPhase !== "done" && (
+        <div className={introPhase === "reveal" ? "intro-exit" : ""}
+          style={{
+            position:"fixed",inset:0,zIndex:1000,
+            background:"#000",
+            display:"flex",flexDirection:"column",
+            alignItems:"center",justifyContent:"center",
+            gap:28,
+          }}>
+          {/* Mascota */}
+          <img
+            src={MASCOT_SRC}
+            alt="Mascota El Sauce"
+            className="intro-mascot"
+            style={{
+              width:280,height:280,
+              borderRadius:"50%",
+              objectFit:"cover",
+              border:"5px solid "+S.mostaza,
+              boxShadow:"0 0 60px rgba(212,168,67,.4)",
+            }}
+          />
+          {/* Texto bienvenida */}
+          {(introPhase === "text" || introPhase === "reveal") && (
+            <div className="intro-text" style={{textAlign:"center",padding:"0 24px"}}>
+              <p style={{
+                fontFamily:"'Playfair Display',serif",
+                fontSize:38,fontWeight:900,
+                color:S.blanco,
+                lineHeight:1.1,
+                marginBottom:12,
+              }}>
+                ¡Bienvenido a El Sauce!
+              </p>
+              <p style={{color:"rgba(255,255,255,.75)",fontSize:16,lineHeight:1.6}}>
+                Donde la calidad, la cercanía y la comodidad llegan a tu hogar.
+              </p>
+              <p style={{color:S.mostaza,fontSize:18,marginTop:6}}>
+                🚚🏡 ¡Tu tienda de barrio en tu celular!
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── WEB PRINCIPAL (emerge desde abajo) ─────────────────────────────── */}
+      <div className={introPhase === "reveal" || introPhase === "done" ? "web-reveal" : ""}
+        style={{
+          transform: introPhase === "mascot" || introPhase === "text" ? "translateY(100%)" : "translateY(0)",
+          minHeight:"100vh",
+        }}>
 
       {/* ── HERO BANNER ─────────────────────────────────────────────────────── */}
       <div style={{position:"relative",height:380,overflow:"hidden"}}>
@@ -559,6 +658,7 @@ export default function ElSauceStore() {
       <footer style={{textAlign:"center",padding:"20px 0 80px",fontSize:12,color:S.gris}}>
         Almacén El Sauce · Chépica, Colchagua
       </footer>
+      </div>{/* end web-reveal */}
     </div>
   );
 }
