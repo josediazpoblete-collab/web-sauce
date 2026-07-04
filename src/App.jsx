@@ -372,13 +372,13 @@ export default function ElSauceStore() {
           transform: introPhase === "mascot" || introPhase === "text" ? "translateY(100%)" : "translateY(0)",
           minHeight:"100vh",
           backgroundImage:`url(${BG_PRODUCTS_SRC})`,
-          backgroundSize:"500px auto",
+          backgroundSize:"700px auto",
           backgroundRepeat:"repeat",
           backgroundAttachment:"local",
           position:"relative",
         }}>
         {/* Overlay para legibilidad en toda la página excepto el banner */}
-        <div style={{position:"absolute",inset:0,background:"rgba(247,243,236,0.88)",zIndex:0,pointerEvents:"none"}} />
+        <div style={{position:"absolute",inset:0,background:"rgba(247,243,236,0.45)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"relative",zIndex:1}}>
 
       {/* ── HERO BANNER ─────────────────────────────────────────────────────── */}
