@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw, Search, ChevronRight } from "lucide-react";
 
 // ─── CONFIGURACIÓN ──────────────────────────────────────────────────────────
@@ -149,7 +149,6 @@ export default function ElSauceStore() {
   const [loading, setLoading]           = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
   const [bgIndex, setBgIndex]           = useState(0);
-  const catNavRef = useRef(null);
 
   useEffect(() => {
     const iv = setInterval(() => setBgIndex(i => (i+1) % BG_PHOTOS.length), 5000);
@@ -342,8 +341,8 @@ export default function ElSauceStore() {
 
       {/* ── CATEGORÍAS ───────────────────────────────────────────────────────── */}
       {!isSearching && (
-        <div ref={catNavRef} style={{overflowX:"auto",padding:"12px 16px",maxWidth:1200,margin:"0 auto"}}>
-          <div style={{display:"flex",gap:8,minWidth:"max-content"}}>
+        <div style={{padding:"12px 16px",maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {categories.map(c => (
               <button key={c.id} onClick={()=>setActiveCat(c.id)}
                 className={`cat-pill ${activeCat===c.id?"active":"inactive"}`}>
