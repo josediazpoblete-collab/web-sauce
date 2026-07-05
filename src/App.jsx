@@ -505,151 +505,153 @@ export default function ElSauceStore() {
           </div>
         )}
 
-        {/* DRAWER BOLETA */}
-        {drawerOpen && (
-          <div style={{position:"fixed",inset:0,zIndex:40,display:"flex",justifyContent:"flex-end"}}>
-            <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)"}} onClick={()=>setDrawerOpen(false)} />
-            <div style={{position:"relative",width:"100%",maxWidth:420,background:"#fff",height:"100%",overflowY:"auto",display:"flex",flexDirection:"column",boxShadow:"-8px 0 32px rgba(0,0,0,.15)"}}>
-              <div style={{background:S.verde,color:"#fff",padding:"20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <p style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700}}>Tu boleta</p>
-                <button onClick={()=>setDrawerOpen(false)} style={{background:"none",border:"none",color:"#fff",cursor:"pointer",display:"flex"}}><X size={22}/></button>
-              </div>
-              <div style={{flex:1,padding:20}}>
-                {cartList.length === 0 ? (
-                  <div style={{textAlign:"center",paddingTop:48,color:S.gris}}>
-                    <ShoppingBasket size={40} style={{margin:"0 auto 12px",opacity:.4}} />
-                    <p style={{fontSize:14}}>Nada agregado todavía.</p>
-                  </div>
-                ) : (
-                  <div>
-                    <p style={{fontSize:11,fontWeight:700,color:S.gris,letterSpacing:1,textTransform:"uppercase",marginBottom:12}}>— Almacén El Sauce —</p>
-                    {cartList.map(i => (
-                      <div key={i.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px dashed #E5E7EB",gap:8}}>
-                        <div style={{flex:1}}>
-                          <p style={{fontSize:13,fontWeight:600}}>{i.name}</p>
-                          <p style={{fontSize:11,color:S.gris}}>{i.qty} {i.unit} × {CLP(i.price)}</p>
-                        </div>
-                        <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <button className="qty-btn" style={{background:S.verde,borderRadius:8}} onClick={()=>addQty(i.id,-1)}><Minus size={13}/></button>
-                          <span style={{fontWeight:700,minWidth:16,textAlign:"center",fontSize:14}}>{i.qty}</span>
-                          <button className="qty-btn" style={{background:S.verde,borderRadius:8}}
-                            disabled={Number.isFinite(i.stock) && i.qty >= i.stock}
-                            onClick={()=>addQty(i.id,1)}><Plus size={13}/></button>
-                        </div>
-                      </div>
-                    ))}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:12,borderTop:"1px dashed #E5E7EB",marginTop:4}}>
-                      <p style={{fontWeight:600,fontSize:13,color:S.gris}}>Subtotal productos</p>
-                      <p style={{fontSize:13,fontWeight:600}}>{CLP(total)}</p>
-                    </div>
-                    {/* Despacho */}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:6}}>
-                      <p style={{fontWeight:600,fontSize:13,color:S.gris}}>Despacho</p>
-                      {despachoGratis
-                        ? <p style={{fontSize:13,fontWeight:700,color:"#16A34A"}}>✅ Gratis</p>
-                        : <p style={{fontSize:13,fontWeight:700,color:S.rojo}}>{CLP(COSTO_DESPACHO)}</p>
-                      }
-                    </div>
-                    {/* Aviso falta para gratis */}
-                    {!despachoGratis && faltaParaGratis > 0 && (
-                      <div style={{background:"#FEF9C3",borderRadius:8,padding:"6px 10px",marginTop:6}}>
-                        <p style={{fontSize:11,color:"#854D0E",fontWeight:600}}>
-                          🛒 Agrega {CLP(faltaParaGratis)} más (sin cigarrillos) para despacho gratis
-                        </p>
-                      </div>
-                    )}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:10}}>
-                      <p style={{fontWeight:800,fontSize:16}}>TOTAL</p>
-                      <p style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {cartList.length > 0 && (
-                <div style={{padding:"16px 20px",borderTop:"1px solid #E5E7EB"}}>
-                  <button onClick={()=>setCheckoutOpen(true)} className="btn-add" style={{borderRadius:12,padding:14,fontSize:15}}>
-                    Continuar pedido <ChevronRight size={18}/>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* CHECKOUT */}
-        {checkoutOpen && (
-          <div style={{position:"fixed",inset:0,zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-            <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.55)"}} onClick={()=>!sent&&setCheckoutOpen(false)} />
-            <div style={{position:"relative",background:"#fff",borderRadius:20,width:"100%",maxWidth:440,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
-              {!sent ? (
-                <>
-                  <div style={{background:S.verde,color:"#fff",padding:"20px",borderRadius:"20px 20px 0 0",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <p style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700}}>Datos de entrega</p>
-                    <button onClick={()=>setCheckoutOpen(false)} style={{background:"none",border:"none",color:"#fff",cursor:"pointer",display:"flex"}}><X size={20}/></button>
-                  </div>
-                  <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
-                    <Field label="Nombre" value={form.nombre} onChange={v=>setForm({...form,nombre:v})} placeholder="Tu nombre" />
-                    <Field label="Dirección" value={form.direccion} onChange={v=>setForm({...form,direccion:v})} placeholder="Calle, número, referencia" icon={MapPin} />
-                    <Field label="Horario preferido" value={form.horario} onChange={v=>setForm({...form,horario:v})} placeholder="Ej: hoy entre 18 y 20h" icon={Clock} />
-                    <div>
-                      <label style={{fontSize:13,fontWeight:700,display:"block",marginBottom:6,color:S.verde}}>Forma de pago al recibir</label>
-                      <div style={{display:"flex",gap:8}}>
-                        {[{id:"efectivo",label:"Efectivo"},{id:"pos",label:"Débito/Crédito"}].map(opt=>(
-                          <button key={opt.id} className={`pago-btn ${form.pago===opt.id?"selected":""}`}
-                            onClick={()=>setForm({...form,pago:opt.id})}>{opt.label}</button>
-                        ))}
-                      </div>
-                    </div>
-                    <Field label="Notas (opcional)" value={form.notas} onChange={v=>setForm({...form,notas:v})} placeholder="Ej: tomates maduros, sin cilantro..." textarea />
-                    <div style={{background:"#F3F4F6",borderRadius:12,padding:12,display:"flex",flexDirection:"column",gap:6}}>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span style={{fontSize:13,color:S.gris}}>Productos</span>
-                        <span style={{fontSize:13,fontWeight:600}}>{CLP(total)}</span>
-                      </div>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span style={{fontSize:13,color:S.gris}}>Despacho</span>
-                        {despachoGratis
-                          ? <span style={{fontSize:13,fontWeight:700,color:"#16A34A"}}>✅ Gratis</span>
-                          : <span style={{fontSize:13,fontWeight:700,color:S.rojo}}>{CLP(COSTO_DESPACHO)}</span>
-                        }
-                      </div>
-                      {!despachoGratis && (
-                        <p style={{fontSize:11,color:"#854D0E",background:"#FEF9C3",borderRadius:6,padding:"4px 8px"}}>
-                          🛒 Agrega {CLP(faltaParaGratis)} más para despacho gratis (sin cigarrillos)
-                        </p>
-                      )}
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:6,borderTop:"1px solid #E5E7EB"}}>
-                        <span style={{fontWeight:700,fontSize:15}}>Total a pagar</span>
-                        <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</span>
-                      </div>
-                    </div>
-                    <button className="btn-wa" disabled={!form.nombre||!form.direccion} onClick={handleConfirm}>
-                      Enviar pedido por WhatsApp
-                    </button>
-                    {(!form.nombre||!form.direccion) && (
-                      <p style={{fontSize:12,textAlign:"center",color:S.gris}}>Completá nombre y dirección para continuar</p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div style={{padding:40,textAlign:"center"}}>
-                  <img src={MASCOT_SRC} alt="Mascota" style={{width:88,height:88,borderRadius:"50%",objectFit:"cover",border:"4px solid #D4A843",margin:"0 auto 16px"}} />
-                  <p style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:S.verde,marginBottom:8}}>¡Pedido enviado!</p>
-                  <p style={{fontSize:13,color:S.gris,lineHeight:1.6,marginBottom:20}}>Se abrió WhatsApp con el detalle de su pedido. El almacén le confirma cuando esté en camino.</p>
-                  <button className="btn-add" style={{borderRadius:12,padding:14}} onClick={resetOrder}>
-                    Hacer otro pedido
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         <footer style={{textAlign:"center",padding:"20px 0 80px",fontSize:12,color:S.gris}}>
           Almacén El Sauce · Chépica, Colchagua
         </footer>
         </div>{/* end zIndex */}
       </div>{/* end web-reveal */}
+
+      {/* ── DRAWER BOLETA — fuera del zIndex wrapper ─────────────────────── */}
+      {drawerOpen && (
+        <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",justifyContent:"flex-end"}}>
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)"}} onClick={()=>setDrawerOpen(false)} />
+          <div style={{position:"relative",width:"100%",maxWidth:420,background:"#fff",height:"100%",overflowY:"auto",display:"flex",flexDirection:"column",boxShadow:"-8px 0 32px rgba(0,0,0,.15)"}}>
+            <div style={{background:S.verde,color:"#fff",padding:"20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <p style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700}}>Tu boleta</p>
+              <button onClick={()=>setDrawerOpen(false)} style={{background:"none",border:"none",color:"#fff",cursor:"pointer",display:"flex"}}><X size={22}/></button>
+            </div>
+            <div style={{flex:1,padding:20}}>
+              {cartList.length === 0 ? (
+                <div style={{textAlign:"center",paddingTop:48,color:S.gris}}>
+                  <ShoppingBasket size={40} style={{margin:"0 auto 12px",opacity:.4}} />
+                  <p style={{fontSize:14}}>Nada agregado todavía.</p>
+                </div>
+              ) : (
+                <div>
+                  <p style={{fontSize:11,fontWeight:700,color:S.gris,letterSpacing:1,textTransform:"uppercase",marginBottom:12}}>— Almacén El Sauce —</p>
+                  {cartList.map(i => (
+                    <div key={i.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px dashed #E5E7EB",gap:8}}>
+                      <div style={{flex:1}}>
+                        <p style={{fontSize:13,fontWeight:600}}>{i.name}</p>
+                        <p style={{fontSize:11,color:S.gris}}>{i.qty} {i.unit} × {CLP(i.price)}</p>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:6}}>
+                        <button className="qty-btn" style={{background:S.verde,borderRadius:8}} onClick={()=>addQty(i.id,-1)}><Minus size={13}/></button>
+                        <span style={{fontWeight:700,minWidth:16,textAlign:"center",fontSize:14}}>{i.qty}</span>
+                        <button className="qty-btn" style={{background:S.verde,borderRadius:8}}
+                          disabled={Number.isFinite(i.stock) && i.qty >= i.stock}
+                          onClick={()=>addQty(i.id,1)}><Plus size={13}/></button>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Desglose despacho */}
+                  <div style={{marginTop:16,display:"flex",flexDirection:"column",gap:6}}>
+                    <div style={{display:"flex",justifyContent:"space-between"}}>
+                      <p style={{fontSize:13,color:S.gris}}>Subtotal</p>
+                      <p style={{fontSize:13,fontWeight:600}}>{CLP(total)}</p>
+                    </div>
+                    <div style={{display:"flex",justifyContent:"space-between"}}>
+                      <p style={{fontSize:13,color:S.gris}}>Despacho</p>
+                      {despachoGratis
+                        ? <p style={{fontSize:13,fontWeight:700,color:"#16A34A"}}>✅ Gratis</p>
+                        : <p style={{fontSize:13,fontWeight:700,color:S.rojo}}>{CLP(COSTO_DESPACHO)}</p>
+                      }
+                    </div>
+                    {!despachoGratis && faltaParaGratis > 0 && (
+                      <div style={{background:"#FEF9C3",borderRadius:8,padding:"6px 10px"}}>
+                        <p style={{fontSize:11,color:"#854D0E",fontWeight:600}}>
+                          🛒 Agrega {CLP(faltaParaGratis)} más para despacho gratis
+                        </p>
+                      </div>
+                    )}
+                    <div style={{display:"flex",justifyContent:"space-between",paddingTop:8,borderTop:"1px solid #E5E7EB"}}>
+                      <p style={{fontWeight:800,fontSize:16}}>TOTAL</p>
+                      <p style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {cartList.length > 0 && (
+              <div style={{padding:"16px 20px",borderTop:"1px solid #E5E7EB"}}>
+                <button onClick={()=>setCheckoutOpen(true)} className="btn-add" style={{borderRadius:12,padding:14,fontSize:15}}>
+                  Continuar pedido <ChevronRight size={18}/>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── CHECKOUT — fuera del zIndex wrapper ──────────────────────────── */}
+      {checkoutOpen && (
+        <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.55)"}} onClick={()=>!sent&&setCheckoutOpen(false)} />
+          <div style={{position:"relative",background:"#fff",borderRadius:20,width:"100%",maxWidth:440,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
+            {!sent ? (
+              <>
+                <div style={{background:S.verde,color:"#fff",padding:"20px",borderRadius:"20px 20px 0 0",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <p style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700}}>Datos de entrega</p>
+                  <button onClick={()=>setCheckoutOpen(false)} style={{background:"none",border:"none",color:"#fff",cursor:"pointer",display:"flex"}}><X size={20}/></button>
+                </div>
+                <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
+                  <Field label="Nombre" value={form.nombre} onChange={v=>setForm({...form,nombre:v})} placeholder="Tu nombre" />
+                  <Field label="Dirección" value={form.direccion} onChange={v=>setForm({...form,direccion:v})} placeholder="Calle, número, referencia" icon={MapPin} />
+                  <Field label="Horario preferido" value={form.horario} onChange={v=>setForm({...form,horario:v})} placeholder="Ej: hoy entre 18 y 20h" icon={Clock} />
+                  <div>
+                    <label style={{fontSize:13,fontWeight:700,display:"block",marginBottom:6,color:S.verde}}>Forma de pago al recibir</label>
+                    <div style={{display:"flex",gap:8}}>
+                      {[{id:"efectivo",label:"Efectivo"},{id:"pos",label:"Débito/Crédito"}].map(opt=>(
+                        <button key={opt.id} className={`pago-btn ${form.pago===opt.id?"selected":""}`}
+                          onClick={()=>setForm({...form,pago:opt.id})}>{opt.label}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <Field label="Notas (opcional)" value={form.notas} onChange={v=>setForm({...form,notas:v})} placeholder="Ej: tomates maduros, sin cilantro..." textarea />
+                  <div style={{background:"#F3F4F6",borderRadius:12,padding:12,display:"flex",flexDirection:"column",gap:6}}>
+                    <div style={{display:"flex",justifyContent:"space-between"}}>
+                      <span style={{fontSize:13,color:S.gris}}>Productos</span>
+                      <span style={{fontSize:13,fontWeight:600}}>{CLP(total)}</span>
+                    </div>
+                    <div style={{display:"flex",justifyContent:"space-between"}}>
+                      <span style={{fontSize:13,color:S.gris}}>Despacho</span>
+                      {despachoGratis
+                        ? <span style={{fontSize:13,fontWeight:700,color:"#16A34A"}}>✅ Gratis</span>
+                        : <span style={{fontSize:13,fontWeight:700,color:S.rojo}}>{CLP(COSTO_DESPACHO)}</span>
+                      }
+                    </div>
+                    {!despachoGratis && (
+                      <p style={{fontSize:11,color:"#854D0E",background:"#FEF9C3",borderRadius:6,padding:"4px 8px"}}>
+                        🛒 Agrega {CLP(faltaParaGratis)} más para despacho gratis
+                      </p>
+                    )}
+                    <div style={{display:"flex",justifyContent:"space-between",paddingTop:6,borderTop:"1px solid #E5E7EB"}}>
+                      <span style={{fontWeight:700,fontSize:15}}>Total a pagar</span>
+                      <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</span>
+                    </div>
+                  </div>
+                  <button className="btn-wa" disabled={!form.nombre||!form.direccion} onClick={handleConfirm}>
+                    Enviar pedido por WhatsApp
+                  </button>
+                  {(!form.nombre||!form.direccion) && (
+                    <p style={{fontSize:12,textAlign:"center",color:S.gris}}>Completá nombre y dirección para continuar</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div style={{padding:40,textAlign:"center"}}>
+                <img src={MASCOT_SRC} alt="Mascota" style={{width:88,height:88,borderRadius:"50%",objectFit:"cover",border:"4px solid #D4A843",margin:"0 auto 16px"}} />
+                <p style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:S.verde,marginBottom:8}}>¡Pedido enviado!</p>
+                <p style={{fontSize:13,color:S.gris,lineHeight:1.6,marginBottom:20}}>Se abrió WhatsApp con el detalle de su pedido. El almacén le confirma cuando esté en camino.</p>
+                <button className="btn-add" style={{borderRadius:12,padding:14}} onClick={resetOrder}>
+                  Hacer otro pedido
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
