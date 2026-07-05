@@ -233,7 +233,15 @@ export default function ElSauceStore() {
   };
 
   const handleConfirm = () => {
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`, "_blank");
+    const msg = buildWhatsAppMessage();
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     setSent(true);
   };
 
@@ -633,9 +641,19 @@ export default function ElSauceStore() {
                       <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</span>
                     </div>
                   </div>
-                  <button className="btn-wa" disabled={!form.nombre||!form.direccion} onClick={handleConfirm}>
+                  <a
+                    href={(!form.nombre||!form.direccion) ? undefined : `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(!form.nombre||!form.direccion) ? e=>e.preventDefault() : ()=>setSent(true)}
+                    style={{
+                      display:"block",width:"100%",background:(!form.nombre||!form.direccion)?"#9CA3AF":"#25D366",
+                      color:"#fff",border:"none",borderRadius:12,padding:14,fontSize:15,fontWeight:700,
+                      cursor:(!form.nombre||!form.direccion)?"not-allowed":"pointer",
+                      textAlign:"center",textDecoration:"none",boxSizing:"border-box",
+                    }}>
                     Enviar pedido por WhatsApp
-                  </button>
+                  </a>
                   {(!form.nombre||!form.direccion) && (
                     <p style={{fontSize:12,textAlign:"center",color:S.gris}}>Completá nombre y dirección para continuar</p>
                   )}
