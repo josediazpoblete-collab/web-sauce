@@ -571,7 +571,7 @@ export default function ElSauceStore() {
                     {!despachoGratis && faltaParaGratis > 0 && (
                       <div style={{background:"#FEF9C3",borderRadius:8,padding:"6px 10px"}}>
                         <p style={{fontSize:11,color:"#854D0E",fontWeight:600}}>
-                          🛒 Agrega {CLP(faltaParaGratis)} más para despacho gratis
+                          {faltaParaGratis > 0 ? `🛒 Agrega ${CLP(faltaParaGratis)} más (sin cigarrillos) para despacho gratis` : `🚬 Solo cigarrillos — despacho ${CLP(COSTO_DESPACHO)}`}
                         </p>
                       </div>
                     )}
@@ -633,7 +633,7 @@ export default function ElSauceStore() {
                     </div>
                     {!despachoGratis && (
                       <p style={{fontSize:11,color:"#854D0E",background:"#FEF9C3",borderRadius:6,padding:"4px 8px"}}>
-                        🛒 Agrega {CLP(faltaParaGratis)} más para despacho gratis
+                        {faltaParaGratis > 0 ? `🛒 Agrega ${CLP(faltaParaGratis)} más (sin cigarrillos) para despacho gratis` : `🚬 Solo cigarrillos — despacho ${CLP(COSTO_DESPACHO)}`}
                       </p>
                     )}
                     <div style={{display:"flex",justifyContent:"space-between",paddingTop:6,borderTop:"1px solid #E5E7EB"}}>
