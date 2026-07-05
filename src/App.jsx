@@ -226,7 +226,7 @@ export default function ElSauceStore() {
     lines.push(`*Total a pagar: ${CLP(totalConDespacho)}*`, "",
       `Nombre: ${form.nombre}`,
       `Dirección: ${form.direccion}`,
-      `Horario: ${form.horario || "Lo antes posible"}`,
+      `Horario: ${form.horario ? form.horario === "" ? "Lo antes posible" : `A las ${form.horario} hrs` : "Lo antes posible"}`,
       `Pago: ${form.pago === "efectivo" ? "Efectivo" : "Débito/Crédito al recibir"}`);
     if (form.notas) lines.push(`Notas: ${form.notas}`);
     return encodeURIComponent(lines.join("\n"));
@@ -607,8 +607,77 @@ export default function ElSauceStore() {
                 </div>
                 <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
                   <Field label="Nombre" value={form.nombre} onChange={v=>setForm({...form,nombre:v})} placeholder="Tu nombre" />
-                  <Field label="Dirección" value={form.direccion} onChange={v=>setForm({...form,direccion:v})} placeholder="Calle, número, referencia" icon={MapPin} />
-                  <Field label="Horario preferido" value={form.horario} onChange={v=>setForm({...form,horario:v})} placeholder="Ej: hoy entre 18 y 20h" icon={Clock} />
+
+                  {/* DIRECCIÓN con autocompletado del navegador + botón GPS */}
+                  <div>
+                    <label style={{fontSize:13,fontWeight:700,display:"block",marginBottom:6,color:S.verde}}>
+                      Dirección de entrega
+                    </label>
+                    <div style={{position:"relative"}}>
+                      <MapPin size={16} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#9CA3AF",zIndex:1}} />
+                      <input
+                        value={form.direccion}
+                        onChange={e=>setForm({...form,direccion:e.target.value})}
+                        placeholder="Calle, número, referencia"
+                        autoComplete="street-address"
+                        style={{width:"100%",border:"2px solid #E5E7EB",borderRadius:12,padding:"10px 44px 10px 38px",fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"inherit"}}
+                      />
+                      {/* Botón GPS */}
+                      <button
+                        type="button"
+                        title="Usar mi ubicación"
+                        onClick={() => {
+                          if (!navigator.geolocation) return;
+                          navigator.geolocation.getCurrentPosition(pos => {
+                            const {latitude: lat, longitude: lng} = pos.coords;
+                            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+                              .then(r=>r.json())
+                              .then(d => {
+                                const a = d.address;
+                                const dir = [a.road, a.house_number, a.suburb||a.neighbourhood||a.village||a.town||a.city].filter(Boolean).join(' ');
+                                setForm(f=>({...f, direccion: dir || `${lat.toFixed(5)}, ${lng.toFixed(5)}`}));
+                              })
+                              .catch(()=> setForm(f=>({...f, direccion: `${lat.toFixed(5)}, ${lng.toFixed(5)}`})));
+                          }, ()=> alert('No se pudo obtener tu ubicación'));
+                        }}
+                        style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"#1C2B1A",border:"none",borderRadius:8,padding:"5px 8px",cursor:"pointer",display:"flex",alignItems:"center",gap:4,color:"#fff",fontSize:11,fontWeight:700}}>
+                        📍 GPS
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* HORARIO con time picker */}
+                  <div>
+                    <label style={{fontSize:13,fontWeight:700,display:"block",marginBottom:6,color:S.verde}}>
+                      Horario preferido de entrega
+                    </label>
+                    <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                      <div style={{position:"relative",flex:1}}>
+                        <Clock size={16} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#9CA3AF"}} />
+                        <input
+                          type="time"
+                          value={form.horario}
+                          onChange={e=>setForm({...form,horario:e.target.value})}
+                          style={{width:"100%",border:"2px solid #E5E7EB",borderRadius:12,padding:"10px 12px 10px 38px",fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer"}}
+                        />
+                      </div>
+                      {/* Horarios rápidos */}
+                      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                        {[["Ahora",""],["Tarde","17:00"],["Noche","19:00"]].map(([label,val])=>(
+                          <button key={label} type="button"
+                            onClick={()=>setForm(f=>({...f,horario:val}))}
+                            style={{
+                              padding:"4px 8px",borderRadius:8,border:"1px solid #E5E7EB",
+                              background:form.horario===val?"#1C2B1A":"#fff",
+                              color:form.horario===val?"#fff":"#1C2B1A",
+                              fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"
+                            }}>
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <label style={{fontSize:13,fontWeight:700,display:"block",marginBottom:6,color:S.verde}}>Forma de pago al recibir</label>
                     <div style={{display:"flex",gap:8}}>
