@@ -135,6 +135,13 @@ export default function ElSauceStore() {
   const [usingFallback, setUsingFallback] = useState(false);
   const [bgIndex, setBgIndex]           = useState(0);
   const [introPhase, setIntroPhase]     = useState("mascot");
+  const [activeSection, setActiveSection] = useState("inicio");
+
+  const scrollTo = (id) => {
+    setActiveSection(id);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     const t1 = setTimeout(() => setIntroPhase("text"),   1200);
@@ -290,6 +297,11 @@ export default function ElSauceStore() {
         .pago-btn.selected{background:#1C2B1A;color:#fff;border-color:#1C2B1A;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px;}
+        .nav-btn{background:none;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 12px;border-radius:8px;transition:all .2s;white-space:nowrap;font-family:inherit;}
+        .nav-btn:hover{background:rgba(255,255,255,.15);}
+        .nav-btn.active{background:rgba(212,168,67,.3);color:#D4A843;}
+        .section-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#1C2B1A;margin-bottom:8px;}
+        .section-divider{width:60px;height:4px;background:#D4A843;border-radius:2px;margin-bottom:24px;}
       `}</style>
 
       {/* INTRO */}
@@ -372,6 +384,26 @@ export default function ElSauceStore() {
             ))}
           </div>
         </div>
+
+        {/* BARRA DE NAVEGACIÓN */}
+        <div style={{background:"#1C2B1A",position:"sticky",top:0,zIndex:90,boxShadow:"0 2px 8px rgba(0,0,0,.3)"}}>
+          <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",gap:4,overflowX:"auto"}}>
+            {[
+              {id:"inicio",label:"🏠 Inicio"},
+              {id:"quienes-somos",label:"👥 Quiénes Somos"},
+              {id:"almacen",label:"🛒 Almacén"},
+              {id:"contacto",label:"📞 Contacto"},
+            ].map(item => (
+              <button key={item.id} className={`nav-btn ${activeSection===item.id?"active":""}`}
+                onClick={()=>scrollTo(item.id)}>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* SECCIÓN INICIO */}
+        <div id="inicio">
 
         {/* BUSCADOR */}
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
@@ -477,6 +509,100 @@ export default function ElSauceStore() {
         </main>
 
 
+
+        </div>{/* end sección inicio */}
+
+        {/* SECCIÓN QUIÉNES SOMOS */}
+        <div id="quienes-somos" style={{maxWidth:1200,margin:"0 auto",padding:"48px 16px 60px"}}>
+          <p className="section-title">Quiénes Somos</p>
+          <div className="section-divider"></div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:24}}>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:32,marginBottom:12}}>🏪</p>
+              <p style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1C2B1A",marginBottom:8}}>Nuestra Historia</p>
+              <p style={{fontSize:14,color:"#6B7280",lineHeight:1.7}}>
+                Almacén El Sauce es un negocio familiar con años de trayectoria en Chépica, Colchagua. Nacimos con el propósito de ser más que un almacén — somos parte del barrio, de la comunidad y de cada familia que nos visita.
+              </p>
+            </div>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:32,marginBottom:12}}>❤️</p>
+              <p style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1C2B1A",marginBottom:8}}>Nuestra Misión</p>
+              <p style={{fontSize:14,color:"#6B7280",lineHeight:1.7}}>
+                Brindar a nuestros clientes productos de calidad con atención cercana y precios justos. Queremos que comprar en El Sauce sea siempre una experiencia cómoda, rápida y confiable — ahora también desde tu casa.
+              </p>
+            </div>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:32,marginBottom:12}}>🌿</p>
+              <p style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1C2B1A",marginBottom:8}}>Nuestros Valores</p>
+              <p style={{fontSize:14,color:"#6B7280",lineHeight:1.7}}>
+                Honestidad, cercanía y compromiso con Chépica. Creemos en el comercio local como motor de nuestra comunidad. Cada compra que hacés en El Sauce es un apoyo directo a una familia del barrio.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* SECCIÓN ALMACÉN */}
+        <div id="almacen" style={{background:"rgba(28,43,26,.04)",padding:"48px 0 60px"}}>
+          <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px"}}>
+            <p className="section-title">Nuestro Almacén</p>
+            <div className="section-divider"></div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:16,marginBottom:32}}>
+              {[
+                {icon:"🥫",cat:"Abarrotes",desc:"Productos básicos de primera necesidad"},
+                {icon:"🥬",cat:"Verdulería",desc:"Frutas y verduras frescas"},
+                {icon:"🥤",cat:"Bebidas",desc:"Jugos, aguas y bebidas"},
+                {icon:"🍞",cat:"Panadería",desc:"Pan fresco todos los días"},
+                {icon:"🧴",cat:"Aseo",desc:"Productos de limpieza y aseo personal"},
+                {icon:"🐾",cat:"Mascotas",desc:"Alimento y accesorios para tus mascotas"},
+                {icon:"📱",cat:"Tecnología",desc:"Artículos tecnológicos y accesorios"},
+                {icon:"🎂",cat:"Cumpleaños",desc:"Todo para celebrar"},
+              ].map(c => (
+                <div key={c.cat} style={{background:"#fff",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 1px 6px rgba(0,0,0,.07)"}}>
+                  <p style={{fontSize:28,marginBottom:6}}>{c.icon}</p>
+                  <p style={{fontWeight:700,fontSize:14,color:"#1C2B1A",marginBottom:4}}>{c.cat}</p>
+                  <p style={{fontSize:12,color:"#6B7280"}}>{c.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{textAlign:"center"}}>
+              <button className="btn-add" style={{maxWidth:280,margin:"0 auto",borderRadius:12,padding:14,fontSize:15}}
+                onClick={()=>scrollTo("inicio")}>
+                🛒 Ver catálogo completo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* SECCIÓN CONTACTO */}
+        <div id="contacto" style={{maxWidth:1200,margin:"0 auto",padding:"48px 16px 100px"}}>
+          <p className="section-title">Contacto</p>
+          <div className="section-divider"></div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:24}}>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:28,marginBottom:12}}>📍</p>
+              <p style={{fontWeight:700,fontSize:16,color:"#1C2B1A",marginBottom:6}}>Dirección</p>
+              <p style={{fontSize:14,color:"#6B7280",lineHeight:1.6}}>Chépica, Región del Libertador<br/>General Bernardo O'Higgins, Chile</p>
+            </div>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:28,marginBottom:12}}>⏰</p>
+              <p style={{fontWeight:700,fontSize:16,color:"#1C2B1A",marginBottom:6}}>Horario de Atención</p>
+              <p style={{fontSize:14,color:"#6B7280",lineHeight:1.6}}>
+                Lunes a Viernes: 8:00 – 21:00<br/>
+                Sábado: 8:00 – 20:00<br/>
+                Domingo: 9:00 – 14:00
+              </p>
+            </div>
+            <div style={{background:"#fff",borderRadius:20,padding:28,boxShadow:"0 2px 12px rgba(0,0,0,.08)"}}>
+              <p style={{fontSize:28,marginBottom:12}}>📱</p>
+              <p style={{fontWeight:700,fontSize:16,color:"#1C2B1A",marginBottom:6}}>WhatsApp</p>
+              <p style={{fontSize:14,color:"#6B7280",marginBottom:16}}>Escríbenos para consultas o pedidos</p>
+              <a href="https://wa.me/56966118435" target="_blank" rel="noopener noreferrer"
+                style={{display:"block",background:"#25D366",color:"#fff",borderRadius:12,padding:"10px 16px",textAlign:"center",textDecoration:"none",fontWeight:700,fontSize:14}}>
+                💬 Escribir por WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
 
         <footer style={{textAlign:"center",padding:"20px 0 80px",fontSize:12,color:S.gris}}>
           Almacén El Sauce · Chépica, Colchagua
