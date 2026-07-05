@@ -424,7 +424,7 @@ export default function ElSauceStore() {
         {/* CATEGORÍAS */}
         {!isSearching && (
           <div style={{padding:"12px 16px",maxWidth:1200,margin:"0 auto"}}>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"flex-start"}}>
               {categories.map(c => (
                 <button key={c.id} onClick={()=>setActiveCat(c.id)} className={`cat-pill ${activeCat===c.id?"active":"inactive"}`}>
                   <span>{c.icon}</span>{c.label}
@@ -547,7 +547,7 @@ export default function ElSauceStore() {
           <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px"}}>
             <p className="section-title">Nuestro Almacén</p>
             <div className="section-divider"></div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:16,marginBottom:32}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16,marginBottom:32,justifyContent:"start"}}>
               {[
                 {icon:"🥫",cat:"Abarrotes",desc:"Productos básicos de primera necesidad"},
                 {icon:"🥬",cat:"Verdulería",desc:"Frutas y verduras frescas"},
