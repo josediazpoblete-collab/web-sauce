@@ -347,6 +347,7 @@ export default function ElSauceStore() {
           .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
           .hero-mascot{width:100px;height:100px;margin-right:0;margin-bottom:12px;}
           .hero-text{min-width:0;width:100%;}
+          .hero-title{font-size:clamp(30px,9vw,42px);}
           .hero-sub{margin-top:6px;}
         }
         .section-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#1C2B1A;margin-bottom:8px;}
