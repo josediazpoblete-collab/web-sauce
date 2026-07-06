@@ -146,11 +146,29 @@ export default function ElSauceStore() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
-  const scrollTo = (id) => {
+  const PATH_TO_SECTION = { "/": "inicio", "/quienes-somos": "quienes-somos", "/almacen": "almacen", "/contacto": "contacto" };
+  const SECTION_TO_PATH = { "inicio": "/", "quienes-somos": "/quienes-somos", "almacen": "/almacen", "contacto": "/contacto" };
+
+  const goToPage = (id) => {
     setActiveSection(id);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const path = SECTION_TO_PATH[id] || "/";
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, "", path);
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
+
+  useEffect(() => {
+    const applyFromLocation = () => {
+      const section = PATH_TO_SECTION[window.location.pathname] || "inicio";
+      setActiveSection(section);
+    };
+    applyFromLocation();
+    window.addEventListener("popstate", applyFromLocation);
+    return () => window.removeEventListener("popstate", applyFromLocation);
+  }, []);
+
+  const scrollTo = (id) => goToPage(id);
 
   useEffect(() => {
     const handler = (e) => {
@@ -446,7 +464,7 @@ export default function ElSauceStore() {
         </div>
 
         {/* SECCIÓN INICIO */}
-        <div id="inicio">
+        <div id="inicio" style={{display: activeSection==="inicio" ? undefined : "none"}}>
 
         {/* BUSCADOR */}
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
@@ -556,7 +574,7 @@ export default function ElSauceStore() {
         </div>{/* end sección inicio */}
 
         {/* SECCIÓN QUIÉNES SOMOS */}
-        <div id="quienes-somos" style={{maxWidth:1200,margin:"0 auto",padding:"48px 16px 60px"}}>
+        <div id="quienes-somos" style={{display: activeSection==="quienes-somos" ? undefined : "none",maxWidth:1200,margin:"0 auto",padding:"48px 16px 60px"}}>
           <p className="section-title">Quiénes Somos</p>
           <div className="section-divider"></div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:24}}>
@@ -585,7 +603,7 @@ export default function ElSauceStore() {
         </div>
 
         {/* SECCIÓN ALMACÉN */}
-        <div id="almacen" style={{background:"rgba(28,43,26,.04)",padding:"48px 0 60px"}}>
+        <div id="almacen" style={{display: activeSection==="almacen" ? undefined : "none",background:"rgba(28,43,26,.04)",padding:"48px 0 60px"}}>
           <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px"}}>
             <p className="section-title">Nuestro Almacén</p>
             <div className="section-divider"></div>
@@ -617,7 +635,7 @@ export default function ElSauceStore() {
         </div>
 
         {/* SECCIÓN CONTACTO */}
-        <div id="contacto" style={{maxWidth:1200,margin:"0 auto",padding:"48px 16px 100px"}}>
+        <div id="contacto" style={{display: activeSection==="contacto" ? undefined : "none",maxWidth:1200,margin:"0 auto",padding:"48px 16px 100px"}}>
           <p className="section-title">Contacto</p>
           <div className="section-divider"></div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:24}}>
