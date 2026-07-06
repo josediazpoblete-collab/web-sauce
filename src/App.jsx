@@ -144,9 +144,9 @@ export default function ElSauceStore() {
   const [form, setForm]                 = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("elsauce_cliente") || "{}");
-      return { nombre: saved.nombre || "", direccion: saved.direccion || "", horario:"", pago:"efectivo", notas:"" };
+      return { nombre: saved.nombre || "", direccion: saved.direccion || "", horario:"", pago:"efectivo", notas:"", ubicacionMaps:"" };
     } catch {
-      return { nombre:"", direccion:"", horario:"", pago:"efectivo", notas:"" };
+      return { nombre:"", direccion:"", horario:"", pago:"efectivo", notas:"", ubicacionMaps:"" };
     }
   });
   const [products, setProducts]         = useState([]);
@@ -304,7 +304,9 @@ export default function ElSauceStore() {
     else lines.push(`Despacho: ✅ GRATIS (pedido sobre ${CLP(5000)})`);
     lines.push(`*Total a pagar: ${CLP(totalConDespacho)}*`, "",
       `Nombre: ${form.nombre}`,
-      `Dirección: ${form.direccion}`,
+      `Dirección: ${form.direccion}`);
+    if (form.ubicacionMaps) lines.push(`📍 Ubicación exacta (Google Maps): ${form.ubicacionMaps}`);
+    lines.push(
       `Horario: ${form.horario ? form.horario === "" ? "Lo antes posible" : `A las ${form.horario} hrs` : "Lo antes posible"}`,
       `Pago: ${form.pago === "efectivo" ? "Efectivo" : "Débito/Crédito al recibir"}`);
     if (form.notas) lines.push(`Notas: ${form.notas}`);
@@ -326,7 +328,7 @@ export default function ElSauceStore() {
 
   const resetOrder = () => {
     setCart({});
-    setForm(f => ({ nombre:f.nombre, direccion:f.direccion, horario:"", pago:"efectivo", notas:"" }));
+    setForm(f => ({ nombre:f.nombre, direccion:f.direccion, horario:"", pago:"efectivo", notas:"", ubicacionMaps:"" }));
     setSent(false); setCheckoutOpen(false); setDrawerOpen(false);
   };
 
@@ -872,7 +874,7 @@ export default function ElSauceStore() {
                       <MapPin size={16} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#9CA3AF",zIndex:1}} />
                       <input
                         value={form.direccion}
-                        onChange={e=>setForm({...form,direccion:e.target.value})}
+                        onChange={e=>setForm({...form,direccion:e.target.value,ubicacionMaps:""})}
                         placeholder="Calle, número, referencia"
                         autoComplete="street-address"
                         style={{width:"100%",border:"2px solid #E5E7EB",borderRadius:12,padding:"10px 44px 10px 38px",fontSize:14,outline:"none",boxSizing:"border-box",fontFamily:"inherit"}}
@@ -885,20 +887,26 @@ export default function ElSauceStore() {
                           if (!navigator.geolocation) return;
                           navigator.geolocation.getCurrentPosition(pos => {
                             const {latitude: lat, longitude: lng} = pos.coords;
+                            const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
                             fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
                               .then(r=>r.json())
                               .then(d => {
                                 const a = d.address;
                                 const dir = [a.road, a.house_number, a.suburb||a.neighbourhood||a.village||a.town||a.city].filter(Boolean).join(' ');
-                                setForm(f=>({...f, direccion: dir || `${lat.toFixed(5)}, ${lng.toFixed(5)}`}));
+                                setForm(f=>({...f, direccion: dir || `${lat.toFixed(5)}, ${lng.toFixed(5)}`, ubicacionMaps: mapsLink}));
                               })
-                              .catch(()=> setForm(f=>({...f, direccion: `${lat.toFixed(5)}, ${lng.toFixed(5)}`})));
+                              .catch(()=> setForm(f=>({...f, direccion: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, ubicacionMaps: mapsLink})));
                           }, ()=> alert('No se pudo obtener tu ubicación'));
                         }}
                         style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"#1C2B1A",border:"none",borderRadius:8,padding:"5px 8px",cursor:"pointer",display:"flex",alignItems:"center",gap:4,color:"#fff",fontSize:11,fontWeight:700}}>
                         📍 GPS
                       </button>
                     </div>
+                    {form.ubicacionMaps && (
+                      <p style={{fontSize:11,color:"#16A34A",fontWeight:700,marginTop:4}}>
+                        ✅ Ubicación exacta adjunta — llegaremos directo a tu puerta
+                      </p>
+                    )}
                   </div>
 
                   {/* HORARIO con time picker */}
