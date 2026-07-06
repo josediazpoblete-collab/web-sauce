@@ -335,11 +335,11 @@ export default function ElSauceStore() {
         .nav-btn.active{background:rgba(212,168,67,.3);color:#D4A843;}
 
         /* HERO responsivo */
-        .hero-banner{position:relative;height:380px;overflow:hidden;}
+        .hero-banner{position:relative;height:auto;min-height:380px;overflow:hidden;}
         .hero-content{position:relative;z-index:1;height:100%;display:flex;flex-wrap:wrap;align-items:center;padding:0 20px;max-width:1200px;margin:0 auto;row-gap:10px;box-sizing:border-box;}
         .hero-mascot{width:160px;height:160px;border-radius:50%;object-fit:cover;border:4px solid #D4A843;flex-shrink:0;margin-right:24px;}
         .hero-text{min-width:230px;max-width:100%;}
-        .hero-title{font-family:'Playfair Display',serif;font-weight:900;color:#fff;line-height:1.15;letter-spacing:-1px;font-size:clamp(30px,5.5vw,64px);overflow-wrap:break-word;word-break:break-word;max-width:100%;}
+        .hero-title{font-family:'Playfair Display',serif;font-weight:900;color:#fff;line-height:1.15;letter-spacing:-1px;font-size:clamp(30px,7.5vw,88px);overflow-wrap:break-word;word-break:break-word;max-width:100%;}
         .hero-sub{color:rgba(255,255,255,.9);line-height:1.4;font-size:clamp(13px,2vw,20px);margin-top:8px;overflow-wrap:break-word;word-break:break-word;max-width:100%;}
         .hero-cart-btn{position:absolute;top:16px;right:16px;z-index:2;background:#D4A843;color:#1C2B1A;border:none;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);}
         @media (max-width:768px){
