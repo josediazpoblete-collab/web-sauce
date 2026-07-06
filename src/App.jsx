@@ -75,7 +75,8 @@ const parseStock = (value) => {
 function parseCSV(text) {
   const lines = text.trim().split("\n");
   const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/[^a-z]/g,""));
-  return lines.slice(1).map(line => {
+  let despachoActivo = true; // por defecto encendido si no hay fila de config
+  const products = lines.slice(1).map(line => {
     const cols = []; let cur = "", inQ = false;
     for (const ch of line) {
       if (ch==='"') { inQ=!inQ; }
@@ -85,6 +86,16 @@ function parseCSV(text) {
     cols.push(cur);
     const row = {};
     headers.forEach((h,i) => row[h]=(cols[i]||"").trim().replace(/^"|"$/g,""));
+
+    // Fila especial de configuración (no es un producto real)
+    const catNormalizada = (row.categoria || "").toLowerCase().trim();
+    const nombreNormalizado = (row.nombre || "").toLowerCase().replace(/\s+/g,"");
+    if (catNormalizada === "config" && nombreNormalizado === "despachoactivo") {
+      const valor = (row.notas || row.precio || "").toString().toLowerCase().trim();
+      despachoActivo = !["no","n","false","0"].includes(valor);
+      return null;
+    }
+
     const INACTIVE = ["no","n","false","0","agotado","agotada","sin stock","sinstock","inactivo","oculto","no disponible"];
     const availability = (firstValue(row.disponible, row.estado, row.activo, row.publicado) || "si").toLowerCase().trim();
     const stock = parseStock(firstValue(row.stock, row.cantidad, row.inventario, row.existencias));
@@ -102,6 +113,7 @@ function parseCSV(text) {
       imagen: sheetImage?.trim() || "",
     };
   }).filter(Boolean);
+  return { products, despachoActivo };
 }
 
 function Field({ label, value, onChange, placeholder, icon: Icon, textarea }) {
@@ -138,6 +150,7 @@ export default function ElSauceStore() {
     }
   });
   const [products, setProducts]         = useState([]);
+  const [despachoActivo, setDespachoActivo] = useState(true);
   const [loading, setLoading]           = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
   const [bgIndex, setBgIndex]           = useState(0);
@@ -213,10 +226,12 @@ export default function ElSauceStore() {
       if (!res.ok) throw new Error();
       const text = await res.text();
       const parsed = parseCSV(text);
-      if (!parsed.length) throw new Error();
-      setProducts(parsed);
+      if (!parsed.products.length) throw new Error();
+      setProducts(parsed.products);
+      setDespachoActivo(parsed.despachoActivo);
     } catch {
       setProducts(PRODUCTOS_RESPALDO);
+      setDespachoActivo(true);
       setUsingFallback(true);
     } finally { setLoading(false); }
   };
@@ -263,6 +278,12 @@ export default function ElSauceStore() {
   const costoDespacho = despachoGratis ? 0 : COSTO_DESPACHO;
   const totalConDespacho = total + costoDespacho;
   const faltaParaGratis = Math.max(0, MINIMO_DESPACHO_GRATIS - totalSinCigarros);
+
+  const HORA_INICIO_DESPACHO = 9;
+  const HORA_FIN_DESPACHO = 21;
+  const horaActual = new Date().getHours();
+  const dentroDeHorario = horaActual >= HORA_INICIO_DESPACHO && horaActual < HORA_FIN_DESPACHO;
+  const despachoDisponible = despachoActivo && dentroDeHorario;
 
   const addQty = (id, delta) => setCart(prev => {
     const product = products.find(p => p.id === Number(id));
@@ -944,25 +965,30 @@ export default function ElSauceStore() {
                       <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.rojo}}>{CLP(totalConDespacho)}</span>
                     </div>
                   </div>
+                  {!despachoDisponible && (
+                    <p style={{fontSize:12,textAlign:"center",background:"#FEE2E2",color:"#991B1B",borderRadius:8,padding:"8px 10px",fontWeight:700}}>
+                      🚫 Despacho no disponible en este horario. Atendemos pedidos de {HORA_INICIO_DESPACHO}:00 a {HORA_FIN_DESPACHO}:00, todos los días.
+                    </p>
+                  )}
                   <a
-                    href={(!form.nombre||!form.direccion) ? undefined : `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`}
+                    href={(!form.nombre||!form.direccion||!despachoDisponible) ? undefined : `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={(!form.nombre||!form.direccion) ? e=>e.preventDefault() : ()=>{
+                    onClick={(!form.nombre||!form.direccion||!despachoDisponible) ? e=>e.preventDefault() : ()=>{
                       try {
                         localStorage.setItem("elsauce_cliente", JSON.stringify({ nombre: form.nombre, direccion: form.direccion }));
                       } catch {}
                       setSent(true);
                     }}
                     style={{
-                      display:"block",width:"100%",background:(!form.nombre||!form.direccion)?"#9CA3AF":"#25D366",
+                      display:"block",width:"100%",background:(!form.nombre||!form.direccion||!despachoDisponible)?"#9CA3AF":"#25D366",
                       color:"#fff",border:"none",borderRadius:12,padding:14,fontSize:15,fontWeight:700,
-                      cursor:(!form.nombre||!form.direccion)?"not-allowed":"pointer",
+                      cursor:(!form.nombre||!form.direccion||!despachoDisponible)?"not-allowed":"pointer",
                       textAlign:"center",textDecoration:"none",boxSizing:"border-box",
                     }}>
                     Enviar pedido por WhatsApp
                   </a>
-                  {(!form.nombre||!form.direccion) && (
+                  {despachoDisponible && (!form.nombre||!form.direccion) && (
                     <p style={{fontSize:12,textAlign:"center",color:S.gris}}>Completá nombre y dirección para continuar</p>
                   )}
                 </div>
