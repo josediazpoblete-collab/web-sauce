@@ -709,10 +709,15 @@ export default function ElSauceStore() {
                 </span>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:6}}>
-                <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:900}}>
-                  {CLP(totalConDespacho)}
-                </span>
-                {despachoGratis && <span style={{fontSize:11,fontWeight:700,color:"#16A34A"}}>🚚 Gratis</span>}
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
+                  <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:900,lineHeight:1}}>
+                    {CLP(totalConDespacho)}
+                  </span>
+                  {despachoGratis
+                    ? <span style={{fontSize:10,fontWeight:700,color:"#16A34A"}}>🚚 Despacho gratis</span>
+                    : <span style={{fontSize:10,fontWeight:600,color:"#5C4A1A"}}>Incluye {CLP(COSTO_DESPACHO)} despacho</span>
+                  }
+                </div>
                 <ChevronRight size={18}/>
               </div>
             </button>
