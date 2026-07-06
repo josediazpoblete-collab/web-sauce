@@ -129,7 +129,14 @@ export default function ElSauceStore() {
   const [drawerOpen, setDrawerOpen]     = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [sent, setSent]                 = useState(false);
-  const [form, setForm]                 = useState({ nombre:"", direccion:"", horario:"", pago:"efectivo", notas:"" });
+  const [form, setForm]                 = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("elsauce_cliente") || "{}");
+      return { nombre: saved.nombre || "", direccion: saved.direccion || "", horario:"", pago:"efectivo", notas:"" };
+    } catch {
+      return { nombre:"", direccion:"", horario:"", pago:"efectivo", notas:"" };
+    }
+  });
   const [products, setProducts]         = useState([]);
   const [loading, setLoading]           = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
@@ -254,7 +261,7 @@ export default function ElSauceStore() {
 
   const resetOrder = () => {
     setCart({});
-    setForm({ nombre:"", direccion:"", horario:"", pago:"efectivo", notas:"" });
+    setForm(f => ({ nombre:f.nombre, direccion:f.direccion, horario:"", pago:"efectivo", notas:"" }));
     setSent(false); setCheckoutOpen(false); setDrawerOpen(false);
   };
 
@@ -734,6 +741,20 @@ export default function ElSauceStore() {
                 </div>
                 <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
                   <Field label="Nombre" value={form.nombre} onChange={v=>setForm({...form,nombre:v})} placeholder="Tu nombre" />
+                  {(() => {
+                    let hasSaved = false;
+                    try { hasSaved = !!JSON.parse(localStorage.getItem("elsauce_cliente")||"{}").nombre; } catch {}
+                    if (!hasSaved) return null;
+                    return (
+                      <button type="button" onClick={()=>{
+                          try { localStorage.removeItem("elsauce_cliente"); } catch {}
+                          setForm(f=>({...f, nombre:"", direccion:""}));
+                        }}
+                        style={{alignSelf:"flex-start",marginTop:-10,background:"none",border:"none",color:S.gris,fontSize:11,textDecoration:"underline",cursor:"pointer",padding:0}}>
+                        ¿No eres tú? Borrar datos guardados
+                      </button>
+                    );
+                  })()}
 
                   {/* DIRECCIÓN con autocompletado del navegador + botón GPS */}
                   <div>
@@ -841,7 +862,12 @@ export default function ElSauceStore() {
                     href={(!form.nombre||!form.direccion) ? undefined : `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={(!form.nombre||!form.direccion) ? e=>e.preventDefault() : ()=>setSent(true)}
+                    onClick={(!form.nombre||!form.direccion) ? e=>e.preventDefault() : ()=>{
+                      try {
+                        localStorage.setItem("elsauce_cliente", JSON.stringify({ nombre: form.nombre, direccion: form.direccion }));
+                      } catch {}
+                      setSent(true);
+                    }}
                     style={{
                       display:"block",width:"100%",background:(!form.nombre||!form.direccion)?"#9CA3AF":"#25D366",
                       color:"#fff",border:"none",borderRadius:12,padding:14,fontSize:15,fontWeight:700,
