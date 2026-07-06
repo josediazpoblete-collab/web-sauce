@@ -143,11 +143,37 @@ export default function ElSauceStore() {
   const [bgIndex, setBgIndex]           = useState(0);
   const [introPhase, setIntroPhase]     = useState("mascot");
   const [activeSection, setActiveSection] = useState("inicio");
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   const scrollTo = (id) => {
     setActiveSection(id);
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+      const dismissed = localStorage.getItem("elsauce_install_dismissed");
+      if (!dismissed) setShowInstallBanner(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+    setShowInstallBanner(false);
+  };
+
+  const dismissInstallBanner = () => {
+    setShowInstallBanner(false);
+    try { localStorage.setItem("elsauce_install_dismissed", "1"); } catch {}
   };
 
   useEffect(() => {
@@ -307,6 +333,22 @@ export default function ElSauceStore() {
         .nav-btn{background:none;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 12px;border-radius:8px;transition:all .2s;white-space:nowrap;font-family:inherit;}
         .nav-btn:hover{background:rgba(255,255,255,.15);}
         .nav-btn.active{background:rgba(212,168,67,.3);color:#D4A843;}
+
+        /* HERO responsivo */
+        .hero-banner{position:relative;height:380px;overflow:hidden;}
+        .hero-content{position:relative;z-index:1;height:100%;display:flex;flex-wrap:wrap;align-items:center;padding:0 20px;max-width:1200px;margin:0 auto;row-gap:10px;box-sizing:border-box;}
+        .hero-mascot{width:160px;height:160px;border-radius:50%;object-fit:cover;border:4px solid #D4A843;flex-shrink:0;margin-right:24px;}
+        .hero-text{min-width:230px;max-width:100%;}
+        .hero-title{font-family:'Playfair Display',serif;font-weight:900;color:#fff;line-height:1.15;letter-spacing:-1px;font-size:clamp(24px,4.2vw,48px);overflow-wrap:break-word;word-break:break-word;max-width:100%;}
+        .hero-sub{color:rgba(255,255,255,.9);line-height:1.4;font-size:clamp(13px,2vw,20px);margin-top:8px;overflow-wrap:break-word;word-break:break-word;max-width:100%;}
+        .hero-cart-btn{position:absolute;top:16px;right:16px;z-index:2;background:#D4A843;color:#1C2B1A;border:none;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+        @media (max-width:768px){
+          .hero-banner{height:auto;min-height:440px;}
+          .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
+          .hero-mascot{width:100px;height:100px;margin-right:0;margin-bottom:12px;}
+          .hero-text{min-width:0;width:100%;}
+          .hero-sub{margin-top:6px;}
+        }
         .section-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#1C2B1A;margin-bottom:8px;}
         .section-divider{width:60px;height:4px;background:#D4A843;border-radius:2px;margin-bottom:24px;}
       `}</style>
@@ -348,7 +390,7 @@ export default function ElSauceStore() {
         <div style={{position:"relative",zIndex:1}}>
 
         {/* BANNER HERO */}
-        <div style={{position:"relative",height:380,overflow:"hidden"}}>
+        <div className="hero-banner">
           {BG_PHOTOS.map((photo,i) => (
             <div key={i} style={{
               position:"absolute",inset:0,
@@ -361,29 +403,21 @@ export default function ElSauceStore() {
             }} />
           ))}
           <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom, rgba(28,43,26,.55) 0%, rgba(28,43,26,.80) 100%)"}} />
-          <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",alignItems:"center",padding:"0 20px",maxWidth:1200,margin:"0 auto"}}>
-            <img src={MASCOT_SRC} alt="Mascota El Sauce"
-              style={{width:160,height:160,borderRadius:"50%",objectFit:"cover",border:"4px solid #D4A843",flexShrink:0,marginRight:24}} />
-            <div style={{flex:1}}>
-              <p style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:900,color:"#fff",lineHeight:1.05,letterSpacing:"-1px"}}>
-                ¡Bienvenido a El Sauce!
-              </p>
-              <p style={{color:"rgba(255,255,255,.9)",fontSize:20,marginTop:12,lineHeight:1.5}}>
-                Donde la calidad, la cercanía y la comodidad llegan a tu hogar.
-              </p>
-              <p style={{color:"rgba(255,255,255,.85)",fontSize:20,marginTop:6}}>
-                Disfruta la experiencia de comprar sin salir de casa. 🚚🏡
-              </p>
+          <button onClick={()=>setDrawerOpen(true)} className="hero-cart-btn">
+            <ShoppingBasket size={20} />
+            {totalItems > 0 && (
+              <span style={{position:"absolute",top:-8,right:-8,background:"#B8341B",color:"#fff",borderRadius:"50%",width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700}}>
+                {totalItems}
+              </span>
+            )}
+          </button>
+          <div className="hero-content">
+            <img src={MASCOT_SRC} alt="Mascota El Sauce" className="hero-mascot" />
+            <div className="hero-text" style={{flex:1}}>
+              <p className="hero-title">¡Bienvenido a El Sauce!</p>
+              <p className="hero-sub">Donde la calidad, la cercanía y la comodidad llegan a tu hogar.</p>
+              <p className="hero-sub">Disfruta la experiencia de comprar sin salir de casa. 🚚🏡</p>
             </div>
-            <button onClick={()=>setDrawerOpen(true)}
-              style={{marginLeft:16,position:"relative",background:"#D4A843",color:"#1C2B1A",border:"none",borderRadius:12,padding:"10px 16px",fontWeight:700,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-              <ShoppingBasket size={20} />
-              {totalItems > 0 && (
-                <span style={{position:"absolute",top:-8,right:-8,background:"#B8341B",color:"#fff",borderRadius:"50%",width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700}}>
-                  {totalItems}
-                </span>
-              )}
-            </button>
           </div>
           <div style={{position:"absolute",bottom:10,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:1}}>
             {BG_PHOTOS.map((_,i) => (
@@ -617,6 +651,34 @@ export default function ElSauceStore() {
         </footer>
         </div>{/* end zIndex */}
       </div>{/* end web-reveal */}
+
+      {/* ── BANNER INSTALAR APP ── */}
+      {showInstallBanner && (
+        <div style={{
+          position:"fixed",
+          bottom: totalItems > 0 && !drawerOpen && !checkoutOpen ? 76 : 0,
+          left:0,right:0,
+          zIndex:99,
+          background:S.mostaza,
+          color:S.verde,
+          padding:"10px 16px",
+          display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,
+          boxShadow:"0 -2px 12px rgba(0,0,0,.15)",
+        }}>
+          <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+            <span style={{fontSize:22,flexShrink:0}}>📲</span>
+            <p style={{fontSize:13,fontWeight:700,margin:0}}>Instala El Sauce en tu celular para pedir más rápido</p>
+          </div>
+          <div style={{display:"flex",gap:8,flexShrink:0}}>
+            <button onClick={handleInstallClick} style={{background:S.verde,color:"#fff",border:"none",borderRadius:8,padding:"8px 14px",fontSize:13,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+              Instalar
+            </button>
+            <button onClick={dismissInstallBanner} style={{background:"none",border:"none",color:S.verde,cursor:"pointer",display:"flex",padding:4}}>
+              <X size={18}/>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── BARRA FLOTANTE — fuera de todos los wrappers ── */}
         {/* BARRA FLOTANTE — siempre visible al fondo */}
