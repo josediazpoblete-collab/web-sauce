@@ -411,10 +411,10 @@ export default function ElSauceStore() {
         .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
-        .zone-marquee-track{display:flex;width:max-content;animation:zone-scroll 22s linear infinite;}
-        .zone-marquee-track span{display:inline-flex;align-items:center;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;padding:0 32px;}
-        @keyframes zone-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-        @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;padding:0 20px;} }
+        .zone-marquee-track{white-space:nowrap;}
+        .zone-marquee-track span{display:inline-block;padding-left:100%;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;}
+        @keyframes zone-scroll{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+        @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
         @media (max-width:768px){
           .hero-banner{height:auto;min-height:440px;}
           .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
@@ -508,7 +508,6 @@ export default function ElSauceStore() {
         {/* FRANJA ZONAS DE DESPACHO */}
         <div className="zone-marquee">
           <div className="zone-marquee-track">
-            <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura.</span>
             <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura.</span>
           </div>
         </div>
