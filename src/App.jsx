@@ -393,6 +393,7 @@ export default function ElSauceStore() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
+        html,body{overflow-x:hidden;width:100%;max-width:100vw;}
         @keyframes mascotGrow{0%{transform:scale(0.05);opacity:0;}60%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);opacity:1;}}
         @keyframes textFadeIn{0%{opacity:0;transform:translateY(18px);}100%{opacity:1;transform:translateY(0);}}
         @keyframes webReveal{0%{transform:translateY(100%);}100%{transform:translateY(0);}}
@@ -815,8 +816,9 @@ export default function ElSauceStore() {
               <p className="footer-small">Villa Jardín<br/>Villa Valle Verde<br/>Villa Codeviche<br/>Villa Luis Cruz Martínez</p>
             </div>
             <div>
-              <p className="footer-heading">Horario y contacto</p>
+              <p className="footer-heading">Horario</p>
               <p className="footer-small">Despacho todos los días<br/>9:00 a 21:00 hrs</p>
+              <p className="footer-heading" style={{marginTop:16}}>Contacto</p>
               <a href="https://wa.me/56966118435" target="_blank" rel="noopener noreferrer" className="footer-wa-btn">
                 💬 WhatsApp
               </a>
