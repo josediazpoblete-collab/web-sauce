@@ -448,21 +448,21 @@ export default function ElSauceStore() {
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
         @keyframes zone-scroll{0%{transform:translateX(var(--marquee-start, 100vw));}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
-        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;width:100%;box-sizing:border-box;}
+        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;width:100%;box-sizing:border-box;overflow:hidden;}
         .footer-leaves{height:26px;width:100%;background-image:radial-gradient(circle at 12px -8px, transparent 13px, #16241A 14px);background-size:26px 22px;background-repeat:repeat-x;background-position:top;transform:translateY(-1px);}
-        .footer-wrap{max-width:1000px;margin:0 auto;padding:40px 24px 24px;display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:28px;justify-content:center;justify-items:center;text-align:center;}
-        .footer-wrap > div{width:100%;max-width:220px;}
-        @media (max-width:760px){ .footer-wrap{grid-template-columns:repeat(2, minmax(0,1fr));row-gap:32px;} }
-        @media (max-width:460px){ .footer-wrap{grid-template-columns:1fr;} }
+        .footer-wrap{max-width:1300px;margin:0 auto;padding:44px 32px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px;}
+        .footer-col{flex:1 1 220px;max-width:340px;text-align:center;}
+        @media (max-width:700px){ .footer-wrap{justify-content:center;} .footer-col{flex:1 1 100%;max-width:400px;} }
         .footer-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:10px;}
         .footer-brand-row img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #D4A843;}
         .footer-brand-name{font-family:'Playfair Display',serif;font-weight:900;font-size:20px;color:#F7F3EC;}
         .footer-tagline{font-size:13px;color:#B7C2AE;line-height:1.5;margin:0 auto;}
         .footer-heading{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#D4A843;margin-bottom:12px;}
+        .footer-subheading{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#D4A843;margin:18px 0 12px;}
         .footer-link{display:block;color:#EFE9DC;font-size:13.5px;text-decoration:none;margin-bottom:9px;opacity:.88;transition:opacity .15s;cursor:pointer;}
         .footer-link:hover{opacity:1;text-decoration:underline;}
         .footer-small{font-size:13px;color:#B7C2AE;line-height:1.7;}
-        .footer-wa-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#25D366;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;}
+        .footer-wa-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#25D366;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;}
         .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:16px 20px 90px;text-align:center;font-size:12px;color:#8FA085;}
         .footer-bottom b{color:#D4A843;}
         @media (max-width:768px){
@@ -797,28 +797,26 @@ export default function ElSauceStore() {
         <footer className="site-footer">
           <div className="footer-leaves"></div>
           <div className="footer-wrap">
-            <div>
+            <div className="footer-col">
               <div className="footer-brand-row">
                 <img src={MASCOT_SRC} alt="El Sauce" />
                 <span className="footer-brand-name">El Sauce</span>
               </div>
               <p className="footer-tagline">Almacén de barrio en Chépica — calidad y cercanía, directo a tu puerta. 🌳</p>
             </div>
-            <div>
+            <div className="footer-col">
               <p className="footer-heading">Navegación</p>
               <a className="footer-link" onClick={()=>scrollTo("inicio")}>Inicio</a>
               <a className="footer-link" onClick={()=>scrollTo("almacen")}>Almacén</a>
               <a className="footer-link" onClick={()=>scrollTo("quienes-somos")}>Quiénes Somos</a>
               <a className="footer-link" onClick={()=>scrollTo("contacto")}>Contacto</a>
+              <p className="footer-subheading">Zonas de despacho</p>
+              <p className="footer-small">Villa Jardín · Villa Valle Verde<br/>Villa Codeviche · Villa Luis Cruz Martínez</p>
             </div>
-            <div>
-              <p className="footer-heading">Zonas de despacho</p>
-              <p className="footer-small">Villa Jardín<br/>Villa Valle Verde<br/>Villa Codeviche<br/>Villa Luis Cruz Martínez</p>
-            </div>
-            <div>
+            <div className="footer-col">
               <p className="footer-heading">Horario</p>
               <p className="footer-small">Despacho todos los días<br/>9:00 a 21:00 hrs</p>
-              <p className="footer-heading" style={{marginTop:16}}>Contacto</p>
+              <p className="footer-subheading">Contacto</p>
               <a href="https://wa.me/56966118435" target="_blank" rel="noopener noreferrer" className="footer-wa-btn">
                 💬 WhatsApp
               </a>
