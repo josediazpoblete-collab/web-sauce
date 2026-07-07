@@ -77,7 +77,7 @@ function parseCSV(text) {
   const lines = text.trim().split("\n");
   const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/[^a-z]/g,""));
   let despachoActivo = true; // por defecto encendido si no hay fila de config
-  const products = lines.slice(1).map(line => {
+  const products = lines.slice(1).map((line, rowIndex) => {
     const cols = []; let cur = "", inQ = false;
     for (const ch of line) {
       if (ch==='"') { inQ=!inQ; }
@@ -103,8 +103,9 @@ function parseCSV(text) {
     const isAvailable = !INACTIVE.includes(availability) && (stock === null || stock > 0);
     if (!row.nombre || !isAvailable) return null;
     const sheetImage = firstValue(row.imagen, row.foto, row.image, row.imageurl, row.urlimagen, row.linkimagen, row.imgbb);
+    const parsedId = Number(row.id);
     return {
-      id:     Number(row.id) || 0,
+      id:     Number.isFinite(parsedId) && parsedId > 0 ? parsedId : 900000 + rowIndex,
       cat:    CAT_MAP[row.categoria?.toLowerCase()] || row.categoria?.toLowerCase(),
       name:   row.nombre,
       price:  parseMoney(row.precio),
