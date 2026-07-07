@@ -439,6 +439,11 @@ export default function ElSauceStore() {
         .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
+        .shipping-marquee{background:#B8341B;}
+        .shipping-marquee .zone-marquee-track span{color:#F7F3EC;}
+        .free-shipping-badge{display:inline-flex;align-items:center;gap:4px;background:#F0EDE0;color:#1C2B1A;border:1.5px solid #D4A843;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;animation:badge-pulse 2.4s ease-in-out infinite;}
+        .free-shipping-badge b{color:#B8341B;}
+        @keyframes badge-pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,.45);}50%{box-shadow:0 0 0 6px rgba(212,168,67,0);}}
         @keyframes mic-pulse{0%{box-shadow:0 0 0 0 rgba(184,52,27,.5);}70%{box-shadow:0 0 0 8px rgba(184,52,27,0);}100%{box-shadow:0 0 0 0 rgba(184,52,27,0);}}
         .zone-marquee-track{white-space:nowrap;height:1.4em;position:relative;}
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
@@ -558,6 +563,13 @@ export default function ElSauceStore() {
           </div>
         </div>
 
+        {/* FRANJA DESPACHO GRATIS */}
+        <div className="zone-marquee shipping-marquee">
+          <div className="zone-marquee-track" style={{"--marquee-start": marqueeWidth ? `${marqueeWidth}px` : undefined}}>
+            <span>🚚 Despacho GRATIS en pedidos sobre $5.000 · ¡Aprovecha y pide con tus vecinos! 🌳</span>
+          </div>
+        </div>
+
         {/* BARRA DE NAVEGACIÓN */}
         <div style={{background:"#1C2B1A",position:"sticky",top:0,zIndex:90,boxShadow:"0 2px 8px rgba(0,0,0,.3)"}}>
           <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",gap:4,overflowX:"auto"}}>
@@ -577,6 +589,13 @@ export default function ElSauceStore() {
 
         {/* SECCIÓN INICIO */}
         <div id="inicio" style={{display: activeSection==="inicio" ? undefined : "none"}}>
+
+        {/* INSIGNIA DESPACHO GRATIS */}
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"14px 16px 0",display:"flex",justifyContent:"center"}}>
+          <div className="free-shipping-badge">
+            🚚 Envío <b>GRATIS</b> en pedidos sobre $5.000
+          </div>
+        </div>
 
         {/* BUSCADOR */}
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
