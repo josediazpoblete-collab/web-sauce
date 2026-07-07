@@ -439,8 +439,6 @@ export default function ElSauceStore() {
         .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
-        .shipping-marquee{background:#B8341B;}
-        .shipping-marquee .zone-marquee-track span{color:#F7F3EC;}
         .free-shipping-badge{display:inline-flex;align-items:center;gap:4px;background:#F0EDE0;color:#1C2B1A;border:1.5px solid #D4A843;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;animation:badge-pulse 2.4s ease-in-out infinite;}
         .free-shipping-badge b{color:#B8341B;}
         @keyframes badge-pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,.45);}50%{box-shadow:0 0 0 6px rgba(212,168,67,0);}}
@@ -449,16 +447,16 @@ export default function ElSauceStore() {
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
         @keyframes zone-scroll{0%{transform:translateX(var(--marquee-start, 100vw));}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
-        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;}
+        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;width:100%;box-sizing:border-box;}
         .footer-leaves{height:26px;width:100%;background-image:radial-gradient(circle at 12px -8px, transparent 13px, #16241A 14px);background-size:26px 22px;background-repeat:repeat-x;background-position:top;transform:translateY(-1px);}
-        .footer-wrap{max-width:1200px;margin:0 auto;padding:36px 20px 20px;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:32px;}
-        @media (max-width:760px){ .footer-wrap{grid-template-columns:1fr 1fr;} }
-        @media (max-width:460px){ .footer-wrap{grid-template-columns:1fr;text-align:center;} }
-        .footer-brand-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-        .footer-brand-row img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #D4A843;}
+        .footer-wrap{max-width:1000px;margin:0 auto;padding:40px 24px 24px;display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:28px;justify-content:center;justify-items:center;text-align:center;}
+        .footer-wrap > div{width:100%;max-width:220px;}
+        @media (max-width:760px){ .footer-wrap{grid-template-columns:repeat(2, minmax(0,1fr));row-gap:32px;} }
+        @media (max-width:460px){ .footer-wrap{grid-template-columns:1fr;} }
+        .footer-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:10px;}
+        .footer-brand-row img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #D4A843;}
         .footer-brand-name{font-family:'Playfair Display',serif;font-weight:900;font-size:20px;color:#F7F3EC;}
-        .footer-tagline{font-size:13px;color:#B7C2AE;line-height:1.5;max-width:240px;}
-        @media (max-width:460px){ .footer-tagline{max-width:none;margin:0 auto;} .footer-brand-row{justify-content:center;} }
+        .footer-tagline{font-size:13px;color:#B7C2AE;line-height:1.5;margin:0 auto;}
         .footer-heading{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#D4A843;margin-bottom:12px;}
         .footer-link{display:block;color:#EFE9DC;font-size:13.5px;text-decoration:none;margin-bottom:9px;opacity:.88;transition:opacity .15s;cursor:pointer;}
         .footer-link:hover{opacity:1;text-decoration:underline;}
@@ -560,13 +558,6 @@ export default function ElSauceStore() {
         <div className="zone-marquee" ref={marqueeRef}>
           <div className="zone-marquee-track" style={{"--marquee-start": marqueeWidth ? `${marqueeWidth}px` : undefined}}>
             <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura.</span>
-          </div>
-        </div>
-
-        {/* FRANJA DESPACHO GRATIS */}
-        <div className="zone-marquee shipping-marquee">
-          <div className="zone-marquee-track" style={{"--marquee-start": marqueeWidth ? `${marqueeWidth}px` : undefined}}>
-            <span>🚚 Despacho GRATIS en pedidos sobre $5.000 · ¡Aprovecha y pide con tus vecinos! 🌳</span>
           </div>
         </div>
 
