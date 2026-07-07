@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw, Search, ChevronRight } from "lucide-react";
 
 const WHATSAPP_NUMBER = "56966118435";
@@ -162,6 +162,16 @@ export default function ElSauceStore() {
   const [activeSection, setActiveSection] = useState("inicio");
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const marqueeRef = useRef(null);
+  const [marqueeWidth, setMarqueeWidth] = useState(0);
+  useEffect(() => {
+    const measure = () => {
+      if (marqueeRef.current) setMarqueeWidth(marqueeRef.current.offsetWidth);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const PATH_TO_SECTION = { "/": "inicio", "/quienes-somos": "quienes-somos", "/almacen": "almacen", "/contacto": "contacto" };
   const SECTION_TO_PATH = { "inicio": "/", "quienes-somos": "/quienes-somos", "almacen": "/almacen", "contacto": "/contacto" };
@@ -413,7 +423,7 @@ export default function ElSauceStore() {
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
         .zone-marquee-track{white-space:nowrap;height:1.4em;position:relative;}
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
-        @keyframes zone-scroll{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}
+        @keyframes zone-scroll{0%{transform:translateX(var(--marquee-start, 100vw));}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
         @media (max-width:768px){
           .hero-banner{height:auto;min-height:440px;}
@@ -506,8 +516,8 @@ export default function ElSauceStore() {
         </div>
 
         {/* FRANJA ZONAS DE DESPACHO */}
-        <div className="zone-marquee">
-          <div className="zone-marquee-track">
+        <div className="zone-marquee" ref={marqueeRef}>
+          <div className="zone-marquee-track" style={{"--marquee-start": marqueeWidth ? `${marqueeWidth}px` : undefined}}>
             <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura.</span>
           </div>
         </div>
