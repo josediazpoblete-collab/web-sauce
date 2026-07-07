@@ -411,9 +411,9 @@ export default function ElSauceStore() {
         .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
-        .zone-marquee-track{white-space:nowrap;}
-        .zone-marquee-track span{display:inline-block;padding-left:100%;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;}
-        @keyframes zone-scroll{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+        .zone-marquee-track{white-space:nowrap;height:1.4em;position:relative;}
+        .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
+        @keyframes zone-scroll{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
         @media (max-width:768px){
           .hero-banner{height:auto;min-height:440px;}
