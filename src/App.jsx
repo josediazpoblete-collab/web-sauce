@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw, Search, ChevronRight } from "lucide-react";
+import { Plus, Minus, ShoppingBasket, MapPin, Clock, X, RefreshCw, Search, ChevronRight, Mic } from "lucide-react";
 
 const WHATSAPP_NUMBER = "56966118435";
 // Pegá acá la URL de tu Apps Script publicado como Web App (paso 3 de la guía)
@@ -141,6 +141,24 @@ function Field({ label, value, onChange, placeholder, icon: Icon, textarea }) {
 export default function ElSauceStore() {
   const [activeCat, setActiveCat]       = useState("abarrotes");
   const [search, setSearch]             = useState("");
+  const [listening, setListening]       = useState(false);
+  const speechSupported = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+  const startVoiceSearch = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    const recognition = new SR();
+    recognition.lang = "es-CL";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
+    recognition.onerror = () => setListening(false);
+    recognition.onresult = (event) => {
+      const texto = event.results[0][0].transcript;
+      setSearch(texto);
+    };
+    recognition.start();
+  };
   const [cart, setCart]                 = useState({});
   const [drawerOpen, setDrawerOpen]     = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -421,10 +439,28 @@ export default function ElSauceStore() {
         .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
+        @keyframes mic-pulse{0%{box-shadow:0 0 0 0 rgba(184,52,27,.5);}70%{box-shadow:0 0 0 8px rgba(184,52,27,0);}100%{box-shadow:0 0 0 0 rgba(184,52,27,0);}}
         .zone-marquee-track{white-space:nowrap;height:1.4em;position:relative;}
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
         @keyframes zone-scroll{0%{transform:translateX(var(--marquee-start, 100vw));}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
+        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;}
+        .footer-leaves{height:26px;width:100%;background-image:radial-gradient(circle at 12px -8px, transparent 13px, #16241A 14px);background-size:26px 22px;background-repeat:repeat-x;background-position:top;transform:translateY(-1px);}
+        .footer-wrap{max-width:1200px;margin:0 auto;padding:36px 20px 20px;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:32px;}
+        @media (max-width:760px){ .footer-wrap{grid-template-columns:1fr 1fr;} }
+        @media (max-width:460px){ .footer-wrap{grid-template-columns:1fr;text-align:center;} }
+        .footer-brand-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+        .footer-brand-row img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #D4A843;}
+        .footer-brand-name{font-family:'Playfair Display',serif;font-weight:900;font-size:20px;color:#F7F3EC;}
+        .footer-tagline{font-size:13px;color:#B7C2AE;line-height:1.5;max-width:240px;}
+        @media (max-width:460px){ .footer-tagline{max-width:none;margin:0 auto;} .footer-brand-row{justify-content:center;} }
+        .footer-heading{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#D4A843;margin-bottom:12px;}
+        .footer-link{display:block;color:#EFE9DC;font-size:13.5px;text-decoration:none;margin-bottom:9px;opacity:.88;transition:opacity .15s;cursor:pointer;}
+        .footer-link:hover{opacity:1;text-decoration:underline;}
+        .footer-small{font-size:13px;color:#B7C2AE;line-height:1.7;}
+        .footer-wa-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#25D366;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;}
+        .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:16px 20px 90px;text-align:center;font-size:12px;color:#8FA085;}
+        .footer-bottom b{color:#D4A843;}
         @media (max-width:768px){
           .hero-banner{height:auto;min-height:440px;}
           .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
@@ -546,12 +582,18 @@ export default function ElSauceStore() {
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
           <div style={{position:"relative"}}>
             <Search size={16} style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:"#6B7280"}} />
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar producto..."
-              style={{width:"100%",background:"#fff",border:"2px solid #E5E7EB",borderRadius:12,padding:"11px 40px",fontSize:14,outline:"none",fontFamily:"inherit",color:"#1C2B1A"}} />
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={listening ? "Escuchando..." : "Buscar producto..."}
+              style={{width:"100%",background:"#fff",border: listening ? "2px solid #B8341B" : "2px solid #E5E7EB",borderRadius:12,padding: speechSupported ? "11px 74px 11px 40px" : "11px 40px",fontSize:14,outline:"none",fontFamily:"inherit",color:"#1C2B1A"}} />
             {search && (
               <button onClick={()=>setSearch("")}
-                style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#6B7280",display:"flex"}}>
+                style={{position:"absolute",right: speechSupported ? 46 : 12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#6B7280",display:"flex"}}>
                 <X size={16} />
+              </button>
+            )}
+            {speechSupported && (
+              <button onClick={startVoiceSearch} title="Buscar por voz"
+                style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background: listening ? "#B8341B" : "#F0EDE5",border:"none",borderRadius:8,width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color: listening ? "#fff" : "#6B7280",animation: listening ? "mic-pulse 1s infinite" : "none"}}>
+                <Mic size={15} />
               </button>
             )}
           </div>
@@ -741,8 +783,38 @@ export default function ElSauceStore() {
           </div>
         </div>
 
-        <footer style={{textAlign:"center",padding:"20px 0 80px",fontSize:12,color:S.gris}}>
-          Almacén El Sauce · Chépica, Colchagua
+        <footer className="site-footer">
+          <div className="footer-leaves"></div>
+          <div className="footer-wrap">
+            <div>
+              <div className="footer-brand-row">
+                <img src={MASCOT_SRC} alt="El Sauce" />
+                <span className="footer-brand-name">El Sauce</span>
+              </div>
+              <p className="footer-tagline">Almacén de barrio en Chépica — calidad y cercanía, directo a tu puerta. 🌳</p>
+            </div>
+            <div>
+              <p className="footer-heading">Navegación</p>
+              <a className="footer-link" onClick={()=>scrollTo("inicio")}>Inicio</a>
+              <a className="footer-link" onClick={()=>scrollTo("almacen")}>Almacén</a>
+              <a className="footer-link" onClick={()=>scrollTo("quienes-somos")}>Quiénes Somos</a>
+              <a className="footer-link" onClick={()=>scrollTo("contacto")}>Contacto</a>
+            </div>
+            <div>
+              <p className="footer-heading">Zonas de despacho</p>
+              <p className="footer-small">Villa Jardín<br/>Villa Valle Verde<br/>Villa Codeviche<br/>Villa Luis Cruz Martínez</p>
+            </div>
+            <div>
+              <p className="footer-heading">Horario y contacto</p>
+              <p className="footer-small">Despacho todos los días<br/>9:00 a 21:00 hrs</p>
+              <a href="https://wa.me/56966118435" target="_blank" rel="noopener noreferrer" className="footer-wa-btn">
+                💬 WhatsApp
+              </a>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            © {new Date().getFullYear()} <b>Almacén El Sauce</b> · Chépica, Colchagua · Hecho con cariño 🌳
+          </div>
         </footer>
         </div>{/* end zIndex */}
       </div>{/* end web-reveal */}
