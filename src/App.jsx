@@ -874,31 +874,40 @@ export default function ElSauceStore() {
           }}>
             <button onClick={()=>setDrawerOpen(true)} style={{
               width:"100%",maxWidth:600,
-              display:"flex",alignItems:"center",justifyContent:"space-between",
+              display:"flex",flexDirection:"column",gap:6,
               background:"#D4A843",color:"#1C2B1A",
               border:"none",borderRadius:14,
-              padding:"13px 20px",
+              padding:"12px 18px",
               cursor:"pointer",fontFamily:"inherit",
               boxShadow:"0 4px 16px rgba(212,168,67,.4)",
               margin:"0 auto",
             }}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <ShoppingBasket size={22}/>
-                <span style={{fontWeight:800,fontSize:15}}>
-                  {totalItems} producto{totalItems!==1?"s":""}
-                </span>
-              </div>
-              <div style={{display:"flex",alignItems:"center",gap:6}}>
-                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
-                  <span style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:900,lineHeight:1}}>
-                    {CLP(totalConDespacho)}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <ShoppingBasket size={20}/>
+                  <span style={{fontWeight:800,fontSize:14}}>
+                    {totalItems} producto{totalItems!==1?"s":""}
                   </span>
-                  {despachoGratis
-                    ? <span style={{fontSize:10,fontWeight:700,color:"#16A34A"}}>🚚 Despacho gratis</span>
-                    : <span style={{fontSize:10,fontWeight:600,color:"#5C4A1A"}}>Incluye {CLP(COSTO_DESPACHO)} despacho</span>
-                  }
                 </div>
                 <ChevronRight size={18}/>
+              </div>
+              <div style={{borderTop:"1px solid rgba(28,43,26,.18)",paddingTop:6,display:"flex",flexDirection:"column",gap:3}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:12.5}}>
+                  <span style={{opacity:.75}}>Subtotal</span>
+                  <span style={{fontWeight:700}}>{CLP(total)}</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:12.5}}>
+                  <span style={{opacity:.75}}>Despacho</span>
+                  <span style={{fontWeight:700,color: despachoGratis ? "#166534" : "inherit"}}>
+                    {despachoGratis ? "Gratis 🚚" : CLP(COSTO_DESPACHO)}
+                  </span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginTop:2}}>
+                  <span style={{fontWeight:800,fontSize:13}}>Total</span>
+                  <span style={{fontFamily:"'Playfair Display',serif",fontSize:21,fontWeight:900}}>
+                    {CLP(totalConDespacho)}
+                  </span>
+                </div>
               </div>
             </button>
           </div>
