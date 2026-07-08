@@ -406,6 +406,8 @@ export default function ElSauceStore() {
         .cat-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;}
         @media (min-width:640px){ .cat-grid{grid-template-columns:repeat(3, 1fr);} }
         @media (min-width:900px){ .cat-grid{grid-template-columns:repeat(4, 1fr);} }
+        .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+        @media (max-width:600px){ .prod-grid{grid-template-columns:repeat(2, 1fr)!important;gap:10px;} }
         .cat-pill{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:14px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;border:2px solid transparent;transition:all .2s;width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;}
         .cat-pill.active{background:#1C2B1A;color:#fff;}
         .cat-pill.inactive{background:#fff;color:#1C2B1A;border-color:#E5E7EB;}
@@ -652,7 +654,7 @@ export default function ElSauceStore() {
             </div>
           )}
           {!loading && itemsInCat.length > 0 && (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
+            <div className="prod-grid">
               {itemsInCat.map(p => {
                 const qty = cart[p.id] || 0;
                 const maxReached = Number.isFinite(p.stock) && qty >= p.stock;
