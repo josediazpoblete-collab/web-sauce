@@ -403,7 +403,10 @@ export default function ElSauceStore() {
         .intro-text{animation:textFadeIn .7s ease forwards;}
         .web-reveal{animation:webReveal .8s cubic-bezier(.22,1,.36,1) forwards;}
         .intro-exit{animation:introFade .5s ease forwards;}
-        .cat-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;border:2px solid transparent;transition:all .2s;}
+        .cat-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;}
+        @media (min-width:640px){ .cat-grid{grid-template-columns:repeat(3, 1fr);} }
+        @media (min-width:900px){ .cat-grid{grid-template-columns:repeat(4, 1fr);} }
+        .cat-pill{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:14px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;border:2px solid transparent;transition:all .2s;width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;}
         .cat-pill.active{background:#1C2B1A;color:#fff;}
         .cat-pill.inactive{background:#fff;color:#1C2B1A;border-color:#E5E7EB;}
         .cat-pill.inactive:hover{border-color:#1C2B1A;}
@@ -610,7 +613,7 @@ export default function ElSauceStore() {
         {/* CATEGORÍAS */}
         {!isSearching && (
           <div style={{padding:"12px 16px",maxWidth:1200,margin:"0 auto"}}>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"flex-start"}}>
+            <div className="cat-grid">
               {categories.map(c => (
                 <button key={c.id} onClick={()=>setActiveCat(c.id)} className={`cat-pill ${activeCat===c.id?"active":"inactive"}`}>
                   <span>{c.icon}</span>{c.label}
