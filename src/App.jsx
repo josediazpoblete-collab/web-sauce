@@ -448,11 +448,10 @@ export default function ElSauceStore() {
         .zone-marquee-track span{position:absolute;left:0;top:0;display:inline-block;white-space:nowrap;color:#1C2B1A;font-weight:800;font-size:14px;animation:zone-scroll 16s linear infinite;will-change:transform;}
         @keyframes zone-scroll{0%{transform:translateX(var(--marquee-start, 100vw));}100%{transform:translateX(-100%);}}
         @media (max-width:600px){ .zone-marquee-track span{font-size:12.5px;} }
-        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;width:100%;box-sizing:border-box;overflow:hidden;}
+        .site-footer{background:#16241A;color:#EFE9DC;position:relative;margin-top:12px;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;align-items:center;}
         .footer-leaves{height:26px;width:100%;background-image:radial-gradient(circle at 12px -8px, transparent 13px, #16241A 14px);background-size:26px 22px;background-repeat:repeat-x;background-position:top;transform:translateY(-1px);}
-        .footer-wrap{max-width:1300px;margin:0 auto;padding:44px 24px 100px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:24px;}
-        .footer-col{flex:1 1 180px;max-width:230px;text-align:center;}
-        @media (max-width:900px){ .footer-wrap{justify-content:center;} .footer-col{flex:1 1 45%;max-width:280px;} }
+        .footer-wrap{width:100%;max-width:1300px;padding:44px 24px 100px;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:24px 40px;box-sizing:border-box;}
+        .footer-col{flex:0 1 190px;text-align:center;}
         @media (max-width:460px){ .footer-col{flex:1 1 100%;} }
         .footer-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:10px;}
         .footer-brand-row img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #D4A843;}
