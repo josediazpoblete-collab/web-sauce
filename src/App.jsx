@@ -428,16 +428,16 @@ export default function ElSauceStore() {
         .nav-btn.active{background:rgba(212,168,67,.3);color:#D4A843;}
 
         /* HERO responsivo */
-        .hero-banner{position:relative;height:auto;min-height:380px;overflow:hidden;}
+        .hero-banner{position:relative;height:auto;min-height:260px;overflow:hidden;}
         .hero-content{position:relative;z-index:1;height:100%;display:flex;flex-wrap:wrap;align-items:center;padding:0 20px;max-width:1200px;margin:0 auto;row-gap:10px;box-sizing:border-box;}
         .hero-mascot{width:160px;height:160px;border-radius:50%;object-fit:cover;border:4px solid #D4A843;flex-shrink:0;margin-right:24px;}
         .hero-text{min-width:230px;max-width:100%;}
         .hero-title{font-family:'Playfair Display',serif;font-weight:900;color:#fff!important;line-height:1.1!important;letter-spacing:-1px;font-size:clamp(22px,4.5vw,60px)!important;overflow-wrap:break-word;word-break:break-word;max-width:100%!important;margin:0!important;}
         .hero-sub{color:rgba(255,255,255,.9)!important;line-height:1.4!important;font-size:clamp(13px,2vw,20px)!important;margin-top:8px!important;overflow-wrap:break-word;word-break:break-word;max-width:100%!important;}
         .hero-cart-btn{position:absolute;top:16px;right:16px;z-index:2;background:#D4A843;color:#1C2B1A;border:none;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);}
-        .hero-working-wrap{position:absolute;right:20px;bottom:14px;display:flex;flex-direction:column;align-items:center;z-index:1;pointer-events:none;}
-        .hero-working-mascot{height:150px;width:auto;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));}
-        .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.55);padding:4px 10px;border-radius:8px;white-space:nowrap;}
+        .hero-working-wrap{position:absolute;top:66px;right:16px;display:flex;flex-direction:column;align-items:center;z-index:1;pointer-events:none;}
+        .hero-working-mascot{height:100px;width:auto;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));}
+        .hero-working-caption{margin-top:4px;color:#fff;font-weight:800;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;background:rgba(28,43,26,.6);padding:3px 8px;border-radius:8px;white-space:nowrap;}
         @media (max-width:768px){ .hero-working-wrap{display:none;} }
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
         .free-shipping-badge{display:inline-flex;align-items:center;gap:4px;background:#F0EDE0;color:#1C2B1A;border:1.5px solid #D4A843;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;animation:badge-pulse 2.4s ease-in-out infinite;}
@@ -463,7 +463,7 @@ export default function ElSauceStore() {
         .footer-small{font-size:13px;color:#B7C2AE;line-height:1.7;}
         .footer-wa-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#25D366;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;}
         @media (max-width:768px){
-          .hero-banner{height:auto;min-height:440px;}
+          .hero-banner{height:auto;min-height:320px;}
           .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
           .hero-mascot{width:100px;height:100px;margin-right:0;margin-bottom:12px;}
           .hero-text{min-width:0;width:100%;}
