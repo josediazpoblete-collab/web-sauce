@@ -277,7 +277,13 @@ export default function ElSauceStore() {
         result.push({ id: p.cat, label: capitalize(p.cat), icon: CAT_ICONS[p.cat] || "📦" });
       }
     });
-    return result;
+    // Estas categorías siempre van al final, en este orden:
+    const AL_FINAL = ["tecnologia", "tecnología", "cumpleanos", "cumpleaños", "ferreteria", "ferretería"];
+    const normales = result.filter(c => !AL_FINAL.includes(c.id));
+    const finales = result
+      .filter(c => AL_FINAL.includes(c.id))
+      .sort((a, b) => AL_FINAL.indexOf(a.id) - AL_FINAL.indexOf(b.id));
+    return [...normales, ...finales];
   }, [products]);
 
   useEffect(() => {
@@ -351,6 +357,7 @@ export default function ElSauceStore() {
     if (!PEDIDOS_SCRIPT_URL || PEDIDOS_SCRIPT_URL.includes("PEGA_AQUI_TU_ID")) return;
     try {
       const productos = cartList.map(i => `${i.qty} ${i.unit} ${i.name}`).join(", ");
+      const items = cartList.map(i => ({ id: i.id, qty: i.qty }));
       fetch(PEDIDOS_SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -358,6 +365,7 @@ export default function ElSauceStore() {
           telefono: "",
           direccion: form.direccion,
           productos,
+          items,
           total: totalConDespacho,
         }),
       }).catch(() => {}); // si falla, no interrumpe el pedido por WhatsApp
