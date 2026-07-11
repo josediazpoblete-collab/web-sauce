@@ -568,7 +568,7 @@ export default function ElSauceStore() {
         {/* FRANJA ZONAS DE DESPACHO */}
         <div className="zone-marquee" ref={marqueeRef}>
           <div className="zone-marquee-track" style={{"--marquee-start": marqueeWidth ? `${marqueeWidth}px` : undefined}}>
-            <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura.</span>
+            <span>📍 Zonas de despacho disponibles: Villa Jardín · Villa Valle Verde · Villa Codeviche · Villa Luis Cruz Martínez. Próximamente ampliamos cobertura. &nbsp;&nbsp;🕐 Despacho todos los días de 9:00 a 21:00 hrs.</span>
           </div>
         </div>
 
