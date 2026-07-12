@@ -353,7 +353,7 @@ export default function ElSauceStore() {
   // Sugerencias para el autocompletado (5 nombres, mientras el usuario escribe)
   const sugerencias = useMemo(() => {
     if (!isSearching) return [];
-    return itemsInCat.slice(0, 2);
+    return itemsInCat.slice(0, 3);
   }, [itemsInCat, isSearching]);
 
   const cartList = useMemo(() =>
