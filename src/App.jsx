@@ -726,11 +726,19 @@ export default function ElSauceStore() {
               </button>
             </div>
           )}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14,flexWrap:"wrap",gap:8}}>
             <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.verde}}>
               {isSearching ? `Resultados para "${search}"` : `${categories.find(c=>c.id===activeCat)?.icon||""} ${categories.find(c=>c.id===activeCat)?.label||""}`}
             </h2>
-            {isSearching && <span style={{fontSize:12,color:S.gris}}>{itemsInCat.length} encontrados</span>}
+            {isSearching && (
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:12,color:S.gris}}>{itemsInCat.length} encontrados</span>
+                <button onClick={()=>{ setSearch(""); setShowSuggestions(false); }}
+                  style={{display:"flex",alignItems:"center",gap:5,background:"#1C2B1A",color:"#fff",border:"none",borderRadius:999,padding:"7px 14px",fontSize:12.5,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                  🛍️ Seguir comprando
+                </button>
+              </div>
+            )}
           </div>
           {loading && (
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 0",gap:12,color:S.gris}}>
