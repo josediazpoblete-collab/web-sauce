@@ -30,6 +30,7 @@ const CAT_ICONS = {
   "ferreteria":"🔧","ferretería":"🔧",
   "tecnologia":"📱","tecnología":"📱",
   "cumpleanos":"🎂","cumpleaños":"🎂",
+  "congelados":"❄️",
 };
 
 const CAT_MAP = {
@@ -138,9 +139,55 @@ function Field({ label, value, onChange, placeholder, icon: Icon, textarea }) {
   );
 }
 
+const normalizar = (s) => (s || "")
+  .toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // saca acentos/tildes
+
+// Distancia de edición simple (Levenshtein) para tolerar errores de tipeo
+function distancia(a, b) {
+  if (a === b) return 0;
+  const la = a.length, lb = b.length;
+  if (la === 0) return lb;
+  if (lb === 0) return la;
+  let prev = Array.from({length: lb + 1}, (_, i) => i);
+  for (let i = 1; i <= la; i++) {
+    const curr = [i];
+    for (let j = 1; j <= lb; j++) {
+      curr[j] = a[i-1] === b[j-1]
+        ? prev[j-1]
+        : 1 + Math.min(prev[j-1], prev[j], curr[j-1]);
+    }
+    prev = curr;
+  }
+  return prev[lb];
+}
+
+// Puntaje de coincidencia entre el texto buscado y el nombre de un producto.
+// 0 = no coincide. Más alto = mejor coincidencia.
+function puntajeBusqueda(nombreProducto, textoBuscado) {
+  const nombre = normalizar(nombreProducto);
+  const query = normalizar(textoBuscado).trim();
+  if (!query) return 0;
+  if (nombre.includes(query)) return 100 - (nombre.indexOf(query) === 0 ? 0 : 5); // match directo, mejor si empieza así
+  const palabrasNombre = nombre.split(/\s+/);
+  const palabrasQuery = query.split(/\s+/);
+  let mejor = 0;
+  for (const pq of palabrasQuery) {
+    if (pq.length < 3) continue; // palabras muy cortas no se evalúan por tipeo
+    for (const pn of palabrasNombre) {
+      if (pn.startsWith(pq) || pq.startsWith(pn)) { mejor = Math.max(mejor, 70); continue; }
+      const tolerancia = pq.length <= 4 ? 1 : 2; // más tolerancia en palabras largas
+      const d = distancia(pq, pn.slice(0, pq.length + tolerancia + 1));
+      if (d <= tolerancia) mejor = Math.max(mejor, 60 - d * 10);
+    }
+  }
+  return mejor;
+}
+
 export default function ElSauceStore() {
   const [activeCat, setActiveCat]       = useState("abarrotes");
   const [search, setSearch]             = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [listening, setListening]       = useState(false);
   const speechSupported = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
   const startVoiceSearch = () => {
@@ -293,9 +340,21 @@ export default function ElSauceStore() {
 
   const isSearching = search.trim().length > 0;
   const itemsInCat = useMemo(() => {
-    if (isSearching) return products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+    if (isSearching) {
+      return products
+        .map(p => ({ p, score: puntajeBusqueda(p.name, search) }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(x => x.p);
+    }
     return products.filter(p => p.cat === activeCat);
   }, [activeCat, products, search, isSearching]);
+
+  // Sugerencias para el autocompletado (5 nombres, mientras el usuario escribe)
+  const sugerencias = useMemo(() => {
+    if (!isSearching) return [];
+    return itemsInCat.slice(0, 5);
+  }, [itemsInCat, isSearching]);
 
   const cartList = useMemo(() =>
     Object.entries(cart).filter(([,qty])=>qty>0)
@@ -603,10 +662,14 @@ export default function ElSauceStore() {
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
           <div style={{position:"relative"}}>
             <Search size={16} style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:"#6B7280"}} />
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={listening ? "Escuchando..." : "Buscar producto..."}
+            <input value={search}
+              onChange={e=>{ setSearch(e.target.value); setShowSuggestions(true); }}
+              onFocus={()=>setShowSuggestions(true)}
+              onBlur={()=>setTimeout(()=>setShowSuggestions(false), 150)}
+              placeholder={listening ? "Escuchando..." : "Buscar producto..."}
               style={{width:"100%",background:"#fff",border: listening ? "2px solid #B8341B" : "2px solid #E5E7EB",borderRadius:12,padding: speechSupported ? "11px 74px 11px 40px" : "11px 40px",fontSize:14,outline:"none",fontFamily:"inherit",color:"#1C2B1A"}} />
             {search && (
-              <button onClick={()=>setSearch("")}
+              <button onClick={()=>{ setSearch(""); setShowSuggestions(false); }}
                 style={{position:"absolute",right: speechSupported ? 46 : 12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#6B7280",display:"flex"}}>
                 <X size={16} />
               </button>
@@ -616,6 +679,19 @@ export default function ElSauceStore() {
                 style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background: listening ? "#B8341B" : "#F0EDE5",border:"none",borderRadius:8,width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color: listening ? "#fff" : "#6B7280",animation: listening ? "mic-pulse 1s infinite" : "none"}}>
                 <Mic size={15} />
               </button>
+            )}
+            {showSuggestions && isSearching && sugerencias.length > 0 && (
+              <div style={{position:"absolute",top:"calc(100% + 6px)",left:0,right:0,background:"#fff",border:"1px solid #E5E7EB",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,.12)",zIndex:40,overflow:"hidden"}}>
+                {sugerencias.map(p => (
+                  <button key={p.id}
+                    onClick={()=>{ setSearch(p.name); setShowSuggestions(false); }}
+                    style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"10px 14px",background:"none",border:"none",borderBottom:"1px solid #F3F4F6",cursor:"pointer",textAlign:"left",fontFamily:"inherit"}}>
+                    <Search size={13} style={{color:"#9CA3AF",flexShrink:0}} />
+                    <span style={{fontSize:13.5,color:"#1C2B1A"}}>{p.name}</span>
+                    <span style={{marginLeft:"auto",fontSize:12.5,color:"#B8341B",fontWeight:700,flexShrink:0}}>{CLP(p.price)}</span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>
