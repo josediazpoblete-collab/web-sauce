@@ -227,6 +227,13 @@ export default function ElSauceStore() {
   const [activeSection, setActiveSection] = useState("inicio");
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [visitCount, setVisitCount] = useState(null);
+  useEffect(() => {
+    fetch("https://api.countapi.xyz/hit/elsauce-chepica-vercel/visitas")
+      .then(r => r.json())
+      .then(data => { if (data && typeof data.value === "number") setVisitCount(data.value); })
+      .catch(() => {}); // si el servicio falla, simplemente no se muestra el contador
+  }, []);
   const marqueeRef = useRef(null);
   const [marqueeWidth, setMarqueeWidth] = useState(0);
   useEffect(() => {
@@ -537,6 +544,8 @@ export default function ElSauceStore() {
         .footer-link:hover{opacity:1;text-decoration:underline;}
         .footer-small{font-size:13px;color:#B7C2AE;line-height:1.7;}
         .footer-wa-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#25D366;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;}
+        .visit-counter{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0F1A0D;border:1px solid #3A4A34;border-radius:8px;padding:6px 12px;font-size:12px;color:#B7C2AE;font-family:'Courier New',monospace;}
+        .visit-counter b{color:#D4A843;font-size:13px;}
         @media (max-width:768px){
           .hero-banner{height:auto;min-height:320px;}
           .hero-content{flex-direction:column;flex-wrap:nowrap;text-align:center;justify-content:center;padding:76px 20px 24px;}
@@ -730,15 +739,7 @@ export default function ElSauceStore() {
             <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:S.verde}}>
               {isSearching ? `Resultados para "${search}"` : `${categories.find(c=>c.id===activeCat)?.icon||""} ${categories.find(c=>c.id===activeCat)?.label||""}`}
             </h2>
-            {isSearching && (
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <span style={{fontSize:12,color:S.gris}}>{itemsInCat.length} encontrados</span>
-                <button onClick={()=>{ setSearch(""); setShowSuggestions(false); }}
-                  style={{display:"flex",alignItems:"center",gap:5,background:"#1C2B1A",color:"#fff",border:"none",borderRadius:999,padding:"7px 14px",fontSize:12.5,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
-                  🛍️ Seguir comprando
-                </button>
-              </div>
-            )}
+            {isSearching && <span style={{fontSize:12,color:S.gris}}>{itemsInCat.length} encontrados</span>}
           </div>
           {loading && (
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 0",gap:12,color:S.gris}}>
@@ -926,6 +927,11 @@ export default function ElSauceStore() {
             <div className="footer-col">
               <p className="footer-heading">Almacén El Sauce</p>
               <p className="footer-small">© {new Date().getFullYear()}<br/>Chépica, Colchagua<br/>Hecho con cariño 🌳</p>
+              {visitCount !== null && (
+                <div className="visit-counter">
+                  👀 Eres el visitante Nº <b>{visitCount.toLocaleString("es-CL")}</b>
+                </div>
+              )}
             </div>
           </div>
         </footer>
