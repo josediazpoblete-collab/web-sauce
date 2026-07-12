@@ -229,10 +229,11 @@ export default function ElSauceStore() {
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [visitCount, setVisitCount] = useState(null);
   useEffect(() => {
-    fetch("https://api.countapi.xyz/hit/elsauce-chepica-vercel/visitas")
+    if (!PEDIDOS_SCRIPT_URL || PEDIDOS_SCRIPT_URL.includes("PEGA_AQUI_TU_ID")) return;
+    fetch(`${PEDIDOS_SCRIPT_URL}?accion=contador`)
       .then(r => r.json())
       .then(data => { if (data && typeof data.value === "number") setVisitCount(data.value); })
-      .catch(() => {}); // si el servicio falla, simplemente no se muestra el contador
+      .catch(() => {}); // si algo falla, simplemente no se muestra el contador
   }, []);
   const marqueeRef = useRef(null);
   const [marqueeWidth, setMarqueeWidth] = useState(0);
