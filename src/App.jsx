@@ -353,7 +353,7 @@ export default function ElSauceStore() {
   // Sugerencias para el autocompletado (5 nombres, mientras el usuario escribe)
   const sugerencias = useMemo(() => {
     if (!isSearching) return [];
-    return itemsInCat.slice(0, 5);
+    return itemsInCat.slice(0, 2);
   }, [itemsInCat, isSearching]);
 
   const cartList = useMemo(() =>
@@ -688,7 +688,7 @@ export default function ElSauceStore() {
               </button>
             )}
             {showSuggestions && isSearching && sugerencias.length > 0 && (
-              <div style={{position:"absolute",top:"calc(100% + 6px)",left:0,right:0,background:"#fff",border:"1px solid #E5E7EB",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,.15)",zIndex:200,overflow:"hidden",maxHeight:220,overflowY:"auto"}}>
+              <div style={{position:"absolute",bottom:"calc(100% + 6px)",left:0,right:0,background:"#fff",border:"1px solid #E5E7EB",borderRadius:12,boxShadow:"0 -8px 24px rgba(0,0,0,.15)",zIndex:200,overflow:"hidden"}}>
                 {sugerencias.map(p => (
                   <button key={p.id}
                     onClick={()=>{ setSearch(p.name); setShowSuggestions(false); }}
