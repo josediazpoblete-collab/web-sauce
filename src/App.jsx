@@ -664,14 +664,11 @@ export default function ElSauceStore() {
         {/* SECCIÓN INICIO */}
         <div id="inicio" style={{display: activeSection==="inicio" ? undefined : "none"}}>
 
-        {/* INSIGNIA DESPACHO GRATIS + WHATSAPP */}
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"14px 16px 0",display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}}>
+        {/* INSIGNIA DESPACHO GRATIS */}
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"14px 16px 0",display:"flex",justifyContent:"center"}}>
           <div className="free-shipping-badge">
             🚚 Envío <b>GRATIS</b> en pedidos sobre $5.000
           </div>
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="whatsapp-badge">
-            💬 Escríbenos o llámanos al WhatsApp: <b>+56 9 6611 8435</b>
-          </a>
         </div>
 
 
