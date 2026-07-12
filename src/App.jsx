@@ -514,6 +514,9 @@ export default function ElSauceStore() {
         .zone-marquee{width:100%;overflow:hidden;background:#D4A843;padding:9px 0;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:5;}
         .free-shipping-badge{display:inline-flex;align-items:center;gap:4px;background:#F0EDE0;color:#1C2B1A;border:1.5px solid #D4A843;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;animation:badge-pulse 2.4s ease-in-out infinite;}
         .free-shipping-badge b{color:#B8341B;}
+        .whatsapp-badge{display:inline-flex;align-items:center;gap:4px;background:#E8F8EE;color:#1C2B1A;border:1.5px solid #25D366;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;transition:transform .15s;}
+        .whatsapp-badge:hover{transform:scale(1.03);}
+        .whatsapp-badge b{color:#128C4A;}
         @keyframes badge-pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,.45);}50%{box-shadow:0 0 0 6px rgba(212,168,67,0);}}
         @keyframes mic-pulse{0%{box-shadow:0 0 0 0 rgba(184,52,27,.5);}70%{box-shadow:0 0 0 8px rgba(184,52,27,0);}100%{box-shadow:0 0 0 0 rgba(184,52,27,0);}}
         .zone-marquee-track{white-space:nowrap;height:1.4em;position:relative;}
@@ -651,12 +654,16 @@ export default function ElSauceStore() {
         {/* SECCIÓN INICIO */}
         <div id="inicio" style={{display: activeSection==="inicio" ? undefined : "none"}}>
 
-        {/* INSIGNIA DESPACHO GRATIS */}
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"14px 16px 0",display:"flex",justifyContent:"center"}}>
+        {/* INSIGNIA DESPACHO GRATIS + WHATSAPP */}
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"14px 16px 0",display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}}>
           <div className="free-shipping-badge">
             🚚 Envío <b>GRATIS</b> en pedidos sobre $5.000
           </div>
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="whatsapp-badge">
+            💬 Escríbenos o llámanos al WhatsApp: <b>+56 9 6611 8435</b>
+          </a>
         </div>
+
 
         {/* BUSCADOR */}
         <div style={{maxWidth:1200,margin:"0 auto",padding:"16px 16px 0"}}>
