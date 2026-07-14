@@ -608,6 +608,7 @@ export default function ElSauceStore() {
               backgroundImage:`url(${photo.src})`,
               backgroundSize: photo.fit || "cover",
               backgroundPosition:`center ${photo.pos}`,
+              backgroundRepeat:"no-repeat",
               backgroundColor: photo.fit === "contain" ? "#1C2B1A" : undefined,
               opacity: i === bgIndex ? 1 : 0,
               transition:"opacity 1.2s ease",
